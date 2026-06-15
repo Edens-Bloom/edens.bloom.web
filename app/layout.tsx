@@ -27,7 +27,14 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <NabBar />
+        <main>{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }
+
+const NabBar = () => <div>This is Navbar</div>;
+const Footer = () => <div>This is Footer</div>;
