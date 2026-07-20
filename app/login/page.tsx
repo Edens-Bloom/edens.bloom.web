@@ -1,84 +1,167 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/store/useStore";
 
-export default function LoginPage() {
-  const router = useRouter();
+const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const { login, isLoading, user } = useStore();
+  const [localError, setLocalError] = useState("");
+  const router = useRouter();
+
+  const { login, isLoading, error: storeError, user } = useStore();
 
   useEffect(() => {
-    if (user) {
-      router.replace("/admin/products");
+    if (user && user.role === "admin") {
+      router.replace("/admin");
     }
-  }, [router, user]);
+  }, [user, router]);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError(null);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLocalError("");
+
     if (!username || !password) {
-      setError("Username and password are required.");
+      setLocalError("Please fill in all fields");
       return;
     }
 
     const success = await login(username, password);
     if (success) {
-      router.replace("/admin/products");
-    } else {
-      setError("Login failed. Please check your credentials.");
+      router.push("/admin");
     }
   };
 
   return (
-    <div className="page-shell flex min-h-[70vh] items-center justify-center">
-      <div className="w-full max-w-md rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
-        <p className="eyebrow">Admin access</p>
-        <h1 className="text-3xl font-semibold text-slate-900">
-          Sign in to manage the boutique.
-        </h1>
-        <p className="mt-3 text-sm text-slate-600">
-          Use your administrator credentials to manage products, orders, and
-          inventory.
-        </p>
+    <div
+      className="login-container"
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "80vh",
+        padding: "2rem",
+      }}
+    >
+      <div
+        className="login-card"
+        style={{
+          background: "white",
+          padding: "2.5rem",
+          borderRadius: "1rem",
+          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+          width: "100%",
+          maxWidth: "400px",
+        }}
+      >
+        <h2
+          style={{
+            textAlign: "center",
+            marginBottom: "2rem",
+            color: "#333",
+            fontSize: "1.8rem",
+          }}
+        >
+          Admin Login
+        </h2>
 
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-sm font-medium text-slate-700">
+        {(localError || storeError) && (
+          <div
+            style={{
+              background: "#fff5f5",
+              color: "#e53e3e",
+              padding: "0.75rem",
+              borderRadius: "0.5rem",
+              marginBottom: "1.5rem",
+              fontSize: "0.9rem",
+              border: "1px solid #feb2b2",
+            }}
+          >
+            {localError || storeError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: "1.5rem" }}>
+            <label
+              htmlFor="username"
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontSize: "0.9rem",
+                color: "#666",
+              }}
+            >
               Username
             </label>
             <input
+              id="username"
+              type="text"
               value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-rose-400"
-              placeholder="admin"
+              onChange={(e) => setUsername(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                borderRadius: "0.5rem",
+                border: "1px solid #ddd",
+                fontSize: "1rem",
+              }}
+              placeholder="Enter username"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700">
+
+          <div style={{ marginBottom: "2rem" }}>
+            <label
+              htmlFor="password"
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontSize: "0.9rem",
+                color: "#666",
+              }}
+            >
               Password
             </label>
             <input
+              id="password"
               type="password"
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-rose-400"
-              placeholder="••••••••"
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                borderRadius: "0.5rem",
+                border: "1px solid #ddd",
+                fontSize: "1rem",
+              }}
+              placeholder="Enter password"
             />
           </div>
-          {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+
           <button
             type="submit"
             disabled={isLoading}
-            className="btn-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"
+            style={{
+              width: "100%",
+              padding: "0.875rem",
+              background: "#4a5568",
+              color: "white",
+              border: "none",
+              borderRadius: "0.5rem",
+              fontSize: "1rem",
+              fontWeight: "600",
+              cursor: isLoading ? "not-allowed" : "pointer",
+              transition: "background 0.2s",
+              opacity: isLoading ? 0.7 : 1,
+            }}
           >
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
     </div>
   );
-}
+};
+
+export default LoginPage;

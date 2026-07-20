@@ -1,0 +1,425 @@
+@use "sass:color";
+@use "../../styles/variables" as *;
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba($dark, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn $transition-medium;
+  padding: 0.75rem;
+
+  @media (min-width: 480px) {
+    padding: 1rem;
+  }
+
+  @media (min-width: $bp-lg) {
+    padding: 2rem;
+  }
+}
+
+.modal-content {
+  background: $white;
+  width: 90%;
+  max-width: 500px;
+  border-radius: $radius;
+  padding: 1.5rem;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+  animation: slideUp $transition-medium;
+  position: relative;
+  overflow: hidden;
+
+  @media (min-width: 480px) {
+    padding: 2rem;
+  }
+
+  @media (min-width: $bp-lg) {
+    padding: 3rem;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, $rose, $sage);
+  }
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  @media (min-width: 480px) {
+    margin-bottom: 1.75rem;
+  }
+
+  @media (min-width: $bp-lg) {
+    margin-bottom: 2rem;
+  }
+
+  .success-icon {
+    color: $sage;
+    margin-bottom: 1rem;
+    display: inline-block;
+    padding: 0.75rem;
+    background: $sage-light;
+    border-radius: 50%;
+    animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    @media (min-width: 480px) {
+      margin-bottom: 1.25rem;
+      padding: 0.9rem;
+    }
+
+    @media (min-width: $bp-lg) {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+    }
+  }
+
+  h2 {
+    font-family: $serif;
+    font-size: 1.5rem;
+    margin-bottom: 0.35rem;
+    color: $dark;
+
+    @media (min-width: 480px) {
+      font-size: 1.75rem;
+      margin-bottom: 0.4rem;
+    }
+
+    @media (min-width: $bp-lg) {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  p {
+    font-size: 0.8rem;
+    color: $muted;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+
+    @media (min-width: 480px) {
+      font-size: 0.85rem;
+    }
+
+    @media (min-width: $bp-lg) {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.modal-body {
+  margin-bottom: 1.5rem;
+
+  @media (min-width: 480px) {
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: $bp-lg) {
+    margin-bottom: 2.5rem;
+  }
+
+  .order-details {
+    background: $cream;
+    padding: 1rem;
+    border-radius: $radius;
+    margin-bottom: 1rem;
+
+    @media (min-width: 480px) {
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (min-width: $bp-lg) {
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+
+      @media (min-width: 480px) {
+        margin-bottom: 0.6rem;
+        font-size: 0.9rem;
+      }
+
+      @media (min-width: $bp-lg) {
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+        padding-top: 0.5rem;
+        border-top: 1px solid $border;
+
+        @media (min-width: 480px) {
+          padding-top: 0.6rem;
+        }
+
+        @media (min-width: $bp-lg) {
+          padding-top: 0.75rem;
+        }
+      }
+
+      .status-badge {
+        color: $sage;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.65rem;
+
+        @media (min-width: 480px) {
+          font-size: 0.7rem;
+        }
+
+        @media (min-width: $bp-lg) {
+          font-size: 0.8rem;
+        }
+      }
+
+      .amount {
+        font-weight: 700;
+        color: $dark;
+      }
+    }
+  }
+
+  .confirmation-message {
+    color: $muted;
+    font-size: 0.8rem;
+    line-height: 1.6;
+
+    @media (min-width: 480px) {
+      font-size: 0.85rem;
+    }
+
+    @media (min-width: $bp-lg) {
+      font-size: 0.9rem;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+
+    @media (min-width: 480px) {
+      margin-bottom: 1.25rem;
+    }
+
+    @media (min-width: $bp-lg) {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+      color: $dark;
+      font-size: 0.8rem;
+
+      @media (min-width: 480px) {
+        margin-bottom: 0.4rem;
+        font-size: 0.9rem;
+      }
+
+      @media (min-width: $bp-lg) {
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+      }
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid $border;
+      border-radius: $radius;
+      font-family: inherit;
+      font-size: 0.85rem;
+      transition: all $transition-medium;
+      touch-action: manipulation;
+
+      @media (min-width: 480px) {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+      }
+
+      @media (min-width: $bp-lg) {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $rose;
+        box-shadow: 0 0 0 3px rgba($rose, 0.1);
+      }
+
+      &::placeholder {
+        color: $muted;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+
+      @media (min-width: 480px) {
+        min-height: 75px;
+      }
+
+      @media (min-width: $bp-lg) {
+        min-height: 80px;
+      }
+    }
+  }
+
+  .order-summary {
+    background: $cream;
+    padding: 1rem;
+    border-radius: $radius;
+    margin-bottom: 1rem;
+
+    @media (min-width: 480px) {
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (min-width: $bp-lg) {
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+
+      @media (min-width: 480px) {
+        font-size: 0.95rem;
+      }
+
+      @media (min-width: $bp-lg) {
+        font-size: 1rem;
+      }
+
+      .amount {
+        color: $rose;
+        font-size: 0.95rem;
+
+        @media (min-width: 480px) {
+          font-size: 1rem;
+        }
+
+        @media (min-width: $bp-lg) {
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+}
+
+.modal-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  @media (min-width: 480px) {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  button {
+    flex: 1;
+    padding: 0.85rem 1rem;
+    border-radius: $radius;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    touch-action: manipulation;
+    font-size: 0.85rem;
+    min-height: 44px;
+
+    @media (min-width: 480px) {
+      padding: 0.9rem 1.2rem;
+      font-size: 0.9rem;
+    }
+
+    @media (min-width: $bp-lg) {
+      padding: 1rem 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .primary-btn {
+    background: $rose;
+    color: white;
+    &:hover:not(:disabled) {
+      background: color.adjust($rose, $lightness: -10%);
+    }
+  }
+
+  .secondary-btn {
+    background: $cream;
+    color: $dark;
+    &:hover {
+      background: color.adjust($cream, $lightness: -5%);
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

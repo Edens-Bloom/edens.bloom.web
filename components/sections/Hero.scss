@@ -1,0 +1,103 @@
+@use "../../styles/variables" as *;
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 90vh;
+  overflow: hidden;
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6vw 5vw 6vw 8vw;
+    background: $cream;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $rose;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    &::before {
+      content: "";
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: $rose;
+    }
+  }
+
+  h1 {
+    font-size: clamp(2.8rem, 5vw, 5rem);
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    em {
+      color: $rose;
+      font-style: italic;
+    }
+  }
+
+  .hero-desc {
+    color: $muted;
+    max-width: 380px;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-badges {
+    display: flex;
+    gap: 2rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid $border;
+  }
+
+  .badge-item {
+    text-align: center;
+  }
+
+  .badge-num {
+    font-family: $serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: $rose;
+    display: block;
+  }
+
+  .badge-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $muted;
+  }
+
+  .hero-image {
+    position: relative;
+    overflow: hidden;
+    background: $rose-light;
+
+    .hero-image-main {
+      width: 100%;
+      height: 100%;
+      object-fit: none;
+      display: block;
+    }
+
+    .hero-image-overlay {
+      position: absolute;
+    }
+  }
+}

@@ -8,7 +8,7 @@ export interface LoginResult {
 
 export const authService = {
   login: async (username: string, password: string): Promise<LoginResult> => {
-    const response = await apiClient.post("/auth/login", {
+    const response = await apiClient.post("/api/auth/login", {
       username,
       password,
     });
@@ -23,12 +23,12 @@ export const authService = {
     email: string;
     password: string;
   }) => {
-    const response = await apiClient.post("/auth/register", payload);
+    const response = await apiClient.post("/api/auth/register", payload);
     return response.data.user as User;
   },
 
   getCurrentUser: async () => {
-    const response = await apiClient.get("/auth/me");
+    const response = await apiClient.get("/api/auth/me");
     return response.data.user as User;
   },
 };

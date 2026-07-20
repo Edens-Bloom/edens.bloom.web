@@ -64,6 +64,30 @@ export const useStore = create<BloomState>((set, get) => ({
       }),
     ),
 
+  updateSelectedProduct: (product) =>
+    set(
+      produce((state: BloomState) => {
+        if (!product) {
+          state.selectedProduct = null;
+          return;
+        }
+
+        state.selectedProduct = state.selectedProduct
+          ? { ...state.selectedProduct, ...product }
+          : (product as SelectedProduct);
+      }),
+    ),
+
+  updateUser: (updatedFields) =>
+    set(
+      produce((state: BloomState) => {
+        if (state.user) {
+          state.user = { ...state.user, ...updatedFields };
+          saveJson("bloom_user", state.user);
+        }
+      }),
+    ),
+
   fetchProducts: async () => {
     set(
       produce((state: BloomState) => {
@@ -88,6 +112,101 @@ export const useStore = create<BloomState>((set, get) => ({
           state.isLoading = false;
         }),
       );
+    }
+  },
+
+  addProduct: async (product) => {
+    set(
+      produce((state: BloomState) => {
+        state.isLoading = true;
+        state.error = null;
+      }),
+    );
+
+    try {
+      const created = await productService.create(product as Partial<Product>);
+      set(
+        produce((state: BloomState) => {
+          state.products = [created, ...state.products];
+          state.isLoading = false;
+        }),
+      );
+      return true;
+    } catch (error) {
+      set(
+        produce((state: BloomState) => {
+          state.error =
+            error instanceof Error ? error.message : "Failed to create product";
+          state.isLoading = false;
+        }),
+      );
+      return false;
+    }
+  },
+
+  updateProduct: async (id, product) => {
+    set(
+      produce((state: BloomState) => {
+        state.isLoading = true;
+        state.error = null;
+      }),
+    );
+
+    try {
+      const updated = await productService.update(
+        id,
+        product as Partial<Product>,
+      );
+      set(
+        produce((state: BloomState) => {
+          const index = state.products.findIndex((item) => item.id === id);
+          if (index !== -1) {
+            state.products[index] = { ...state.products[index], ...updated };
+          }
+          state.isLoading = false;
+        }),
+      );
+      return true;
+    } catch (error) {
+      set(
+        produce((state: BloomState) => {
+          state.error =
+            error instanceof Error ? error.message : "Failed to update product";
+          state.isLoading = false;
+        }),
+      );
+      return false;
+    }
+  },
+
+  deleteProduct: async (id) => {
+    set(
+      produce((state: BloomState) => {
+        state.isLoading = true;
+        state.error = null;
+      }),
+    );
+
+    try {
+      await productService.delete(id);
+      set(
+        produce((state: BloomState) => {
+          state.products = state.products.filter(
+            (product) => product.id !== id,
+          );
+          state.isLoading = false;
+        }),
+      );
+      return true;
+    } catch (error) {
+      set(
+        produce((state: BloomState) => {
+          state.error =
+            error instanceof Error ? error.message : "Failed to delete product";
+          state.isLoading = false;
+        }),
+      );
+      return false;
     }
   },
 

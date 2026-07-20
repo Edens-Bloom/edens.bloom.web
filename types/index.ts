@@ -102,8 +102,16 @@ export interface BloomState {
   selectedProduct: SelectedProduct | null;
   loading: { fetchById: boolean };
   orders: Order[];
+  updateUser: (user: Partial<User>) => void;
   setSelectedProduct: (product: SelectedProduct | null) => void;
+  updateSelectedProduct: (product: Partial<SelectedProduct> | null) => void;
   fetchProducts: () => Promise<void>;
+  addProduct: (product: Partial<Product> | FormData) => Promise<boolean>;
+  updateProduct: (
+    id: number,
+    product: Partial<Product> | FormData,
+  ) => Promise<boolean>;
+  deleteProduct: (id: number) => Promise<boolean>;
   addToCart: (product: SelectedProduct) => void;
   removeFromCart: (item: SelectedProduct) => void;
   updateCart: (product: SelectedProduct) => void;
@@ -113,4 +121,5 @@ export interface BloomState {
   fetchOrders: () => Promise<void>;
   onConfirm: () => Promise<Order>;
   fetchProductById: (id: number, isSelected?: boolean) => Promise<void>;
+  getCartCount: () => number;
 }

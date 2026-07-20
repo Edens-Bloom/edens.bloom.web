@@ -1,50 +1,68 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useStore } from "@/store/useStore";
+import "./Navbar.scss";
 
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/cart", label: "Cart" },
-  { href: "/login", label: "Admin" },
-];
-
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const pathname = usePathname();
+  const { getCartCount, user, logout } = useStore();
+
+  const shopActive = pathname === "/" || /^\/item\/\d+/.test(pathname);
 
   return (
-    <nav className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-lg font-semibold text-rose-700">
-            EB
-          </div>
-          <div>
-            <p className="text-base font-semibold text-slate-900">
-              Eden&apos;s Bloom
-            </p>
-            <p className="text-sm text-slate-500">Boutique florist</p>
-          </div>
+    <nav className="site-nav">
+      <div className="site-nav__inner">
+        <Link href="/" className="site-nav__brand">
+          Edens Bloom
         </Link>
+        <div className="site-nav__links">
+          <Link
+            href="/#occasions"
+            className={`site-nav__link${shopActive ? " site-nav__link--active" : ""}`}
+          >
+            Shop
+          </Link>
 
-        <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 p-1">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                  isActive
-                    ? "bg-slate-900 text-white"
-                    : "text-slate-700 hover:bg-white hover:text-slate-900"
-                }`}
+          <Link href="/#custom-design" className="site-nav__link">
+            Custom
+          </Link>
+          {user?.role === "admin" && (
+            <Link
+              href="/admin"
+              className="site-nav__link site-nav__link--danger"
+            >
+              Manage
+            </Link>
+          )}
+        </div>
+
+        <div className="site-nav__actions">
+          <Link
+            href="/cart"
+            className="site-nav__cart press-effect"
+            aria-label="Cart"
+          >
+            <span className="material-symbols-outlined">shopping_cart</span>
+            {getCartCount() > 0 && (
+              <span className="site-nav__cart-badge">{getCartCount()}</span>
+            )}
+          </Link>
+
+          {user && (
+            <div className="site-nav__user">
+              <span className="site-nav__username"></span>
+              <button
+                type="button"
+                onClick={logout}
+                className="site-nav__logout"
               >
-                {item.label}
-              </Link>
-            );
-          })}
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>

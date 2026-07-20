@@ -1,0 +1,73 @@
+@use "sass:color";
+@use "../../styles/variables" as *;
+
+.newsletter {
+  background: $dark;
+  color: white;
+  padding: $section-padding;
+  text-align: center;
+
+  h2 {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    margin-bottom: 1rem;
+    em {
+      color: $rose;
+      font-style: italic;
+    }
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 2rem;
+  }
+
+  .newsletter-form {
+    display: flex;
+    gap: 0;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .newsletter-input {
+    flex: 1;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-right: none;
+    color: white;
+    font-family: $sans;
+    font-size: 0.9rem;
+    outline: none;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.35);
+    }
+  }
+
+  .newsletter-btn {
+    background: $rose;
+    color: white;
+    padding: 14px 24px;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    &:hover {
+      background: color.adjust($rose, $lightness: -10%);
+    }
+  }
+
+  .subscribed-msg {
+    animation: fadeIn 0.5s ease;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

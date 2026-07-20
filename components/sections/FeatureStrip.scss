@@ -1,0 +1,32 @@
+@use "../../styles/variables" as *;
+
+.strip {
+  background: $rose;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 5vw;
+  gap: 3rem;
+  flex-wrap: wrap;
+
+  .strip-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: white;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    svg {
+      opacity: 0.85;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .strip {
+    gap: 1.5rem;
+    padding: 1rem 5vw;
+  }
+}

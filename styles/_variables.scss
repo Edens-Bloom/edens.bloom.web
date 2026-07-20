@@ -1,0 +1,89 @@
+// Edens Bloom design tokens (Material-style palette)
+
+$color-surface-container-lowest: #ffffff;
+$color-on-tertiary-fixed: #3d0026;
+$color-outline-variant: #d6c2bb;
+$color-on-error: #ffffff;
+$color-primary-container: #c58b73;
+$color-surface-container-low: #f5f3ef;
+$color-on-secondary-fixed: #221a15;
+$color-inverse-surface: #30312e;
+$color-secondary-fixed: #f0dfd7;
+$color-on-secondary: #ffffff;
+$color-on-primary-container: #4d2614;
+$color-primary-fixed: #ffdbcd;
+$color-inverse-on-surface: #f2f0ed;
+$color-surface-bright: #fbf9f5;
+$color-surface-variant: #e4e2de;
+$color-on-secondary-fixed-variant: #4f453f;
+$color-on-background: #1b1c1a;
+$color-error: #ba1a1a;
+$color-primary: #83523d;
+$color-on-primary: #ffffff;
+$color-on-surface-variant: #52443f;
+$color-surface-tint: #83523d;
+$color-tertiary-container: #ec6caf;
+$color-surface-container-high: #eae8e4;
+$color-tertiary-fixed: #ffd8e7;
+$color-tertiary-fixed-dim: #ffafd3;
+$color-outline: #84746e;
+$color-on-secondary-container: #6e625c;
+$color-surface-dim: #dbdad6;
+$color-error-container: #ffdad6;
+$color-on-error-container: #93000a;
+$color-background: #fbf9f5;
+$color-secondary-container: #f0dfd7;
+$color-on-tertiary: #ffffff;
+$color-on-primary-fixed-variant: #683b28;
+$color-surface: #fbf9f5;
+$color-secondary-fixed-dim: #d3c3bc;
+$color-on-surface: #1b1c1a;
+$color-on-tertiary-container: #630041;
+$color-inverse-primary: #f8b89e;
+$color-primary-fixed-dim: #f8b89e;
+$color-on-primary-fixed: #331103;
+$color-surface-container-highest: #e4e2de;
+$color-surface-container: #efeeea;
+$color-tertiary: #a43073;
+$color-badge: $color-tertiary;
+$color-secondary: #685c56;
+$color-on-tertiary-fixed-variant: #85145a;
+
+// Legacy aliases (Cart & older SCSS)
+$dark: $color-on-background;
+$cream: $color-background;
+$rose: $color-primary;
+$rose-light: $color-surface-container-low;
+$rose-dark: #6b4030;
+$sage: $color-secondary;
+$sage-light: $color-surface-container-low;
+$muted: $color-on-surface-variant;
+$border: $color-outline-variant;
+$white: $color-surface-container-lowest;
+
+$font-sans: "Roboto", system-ui, sans-serif;
+$font-serif: "Roboto", Georgia, serif;
+$sans: $font-sans;
+$serif: $font-serif;
+
+$gutter: 24px;
+$container-max: 1280px;
+$container-padding: 0 5vw;
+$radius-sm: 0.25rem;
+$radius-lg: 0.5rem;
+$radius-xl: 0.75rem;
+$radius-pill: 9999px;
+$radius-card: 24px;
+$radius-card-lg: 32px;
+$radius-hero: 40px;
+
+$mobile: 480px;
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+
+$transition-fast: 0.2s ease;
+$transition-medium: 0.3s ease;
+$transition-slow: 0.7s ease;
+$radius: 2px;
+$section-padding: 5rem 8vw;
