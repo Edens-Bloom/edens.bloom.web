@@ -122,4 +122,5 @@ export interface BloomState {
   onConfirm: () => Promise<Order>;
   fetchProductById: (id: number, isSelected?: boolean) => Promise<void>;
   getCartCount: () => number;
+  rehydrate: () => void;
 }

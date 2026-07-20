@@ -11,7 +11,7 @@ import type {
   Product,
   SelectedProduct,
   User,
-  Order,
+  // Order (unused)
 } from "@/types";
 
 const initializeCart = (): CartState => ({
@@ -23,10 +23,11 @@ const initializeCart = (): CartState => ({
   totalAmount: 0,
 });
 
-const isBrowser = typeof window !== "undefined";
-
 const loadJson = <T>(key: string, fallback: T): T => {
-  if (!isBrowser) return fallback;
+  if (typeof window === "undefined") {
+    return fallback;
+  }
+
   try {
     const value = window.localStorage.getItem(key);
     return value ? (JSON.parse(value) as T) : fallback;
@@ -36,21 +37,20 @@ const loadJson = <T>(key: string, fallback: T): T => {
 };
 
 const saveJson = (key: string, value: unknown) => {
-  if (!isBrowser) return;
+  if (typeof window === "undefined") return;
   window.localStorage.setItem(key, JSON.stringify(value));
 };
 
-const getInitialCart = (): CartState =>
-  loadJson("bloom_cart", initializeCart());
+const getInitialCart = (): CartState => initializeCart();
 
-interface CreateProductPayload extends Partial<Product> {}
+// interface CreateProductPayload extends Partial<Product> {}
 
 export const useStore = create<BloomState>((set, get) => ({
   products: [],
   cart: getInitialCart(),
-  wishlist: loadJson<number[]>("bloom_wishlist", []),
-  user: loadJson<User | null>("bloom_user", null),
-  token: isBrowser ? window.localStorage.getItem("bloom_token") : null,
+  wishlist: [] as number[],
+  user: null,
+  token: null,
   isLoading: false,
   error: null,
   selectedProduct: null,
@@ -327,6 +327,19 @@ export const useStore = create<BloomState>((set, get) => ({
     );
   },
 
+  // Load persisted data from localStorage. Call from a client-side effect
+  // after the first render to avoid hydration mismatches.
+  rehydrate: () => {
+    set(
+      produce((state: BloomState) => {
+        state.cart = loadJson<CartState>("bloom_cart", initializeCart());
+        state.wishlist = loadJson<number[]>("bloom_wishlist", []);
+        state.user = loadJson<User | null>("bloom_user", null);
+        state.token = loadJson<string | null>("bloom_token", null);
+      }),
+    );
+  },
+
   toggleWishlist: (productId: number) => {
     set(
       produce((state: BloomState) => {
@@ -377,10 +390,8 @@ export const useStore = create<BloomState>((set, get) => ({
   },
 
   logout: () => {
-    if (isBrowser) {
-      window.localStorage.removeItem("bloom_token");
-      window.localStorage.removeItem("bloom_user");
-    }
+    window.localStorage.removeItem("bloom_token");
+    window.localStorage.removeItem("bloom_user");
     set(
       produce((state: BloomState) => {
         state.user = null;

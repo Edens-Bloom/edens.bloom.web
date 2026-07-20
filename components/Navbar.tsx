@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStore } from "@/store/useStore";
@@ -8,7 +8,13 @@ import "./Navbar.scss";
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const { getCartCount, user, logout } = useStore();
+  const { getCartCount, user, logout, rehydrate } = useStore();
+
+  useEffect(() => {
+    // Defer loading persisted state until after first render
+    // to prevent server/client HTML mismatches during hydration.
+    rehydrate?.();
+  }, [rehydrate]);
 
   const shopActive = pathname === "/" || /^\/item\/\d+/.test(pathname);
 
