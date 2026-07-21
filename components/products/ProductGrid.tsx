@@ -13,9 +13,10 @@ import { DNA } from "react-loader-spinner";
 
 const getSelectedImage = (product: SelectedProduct | null) => {
   if (!product?.id) return product?.imageUrl;
+  const imageSrc = product?.selectedImageUrl || product.imageUrl || "/next.svg";
   return (
     <img
-      src={product?.selectedImageUrl || product.imageUrl}
+      src={imageSrc}
       alt={product.name}
       className="product-modal__main-img"
     />
@@ -183,7 +184,10 @@ const ProductGrid: React.FC = () => {
                       aria-label={`View ${product.name}`}
                       onClick={() => handleProductClick(product)}
                     >
-                      <img src={product.imageUrl} alt={product.name} />
+                      <img
+                        src={product.imageUrl || "/next.svg"}
+                        alt={product.name}
+                      />
                     </button>
                     {product.badge && (
                       <Badge type={product.badge as BadgeType} />
@@ -296,7 +300,10 @@ const ProductGrid: React.FC = () => {
                                 }
                                 aria-label={`View image ${1}`}
                               >
-                                <img src={selectedProduct?.imageUrl || ""} alt="" />
+                                <img
+                                  src={selectedProduct?.imageUrl || "/next.svg"}
+                                  alt=""
+                                />
                               </button>
                               {selectedProduct?.addOns?.map((addon, i) => (
                                 <button
@@ -317,7 +324,10 @@ const ProductGrid: React.FC = () => {
                                   }
                                   aria-label={`View image ${i + 1}`}
                                 >
-                                  <img src={addon.imageUrl} alt="" />
+                                  <img
+                                    src={addon.imageUrl || "/next.svg"}
+                                    alt=""
+                                  />
                                 </button>
                               ))}
                             </div>
@@ -372,7 +382,9 @@ const ProductGrid: React.FC = () => {
                           </div>
                           <p className="product-modal__price">
                             {formatRs(
-                              selectedProduct?.subTotal ?? selectedProduct?.price ?? 0,
+                              selectedProduct?.subTotal ??
+                                selectedProduct?.price ??
+                                0,
                             )}
                             {(selectedProduct?.quantity ?? 1) > 1 && (
                               <span

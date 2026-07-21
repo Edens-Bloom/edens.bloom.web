@@ -1,9 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import { getSignedImageUrl } from "@/lib/cloudinary";
+import { DBAddOns, DProduct, Product } from "@/types";
 
 type ProductRouteContext = {
   params?: Promise<{ id?: string | string[] | undefined }>;
+};
+
+const getRequestBody = async (req: NextRequest) => {
+  const contentType = req.headers.get("content-type") || "";
+
+  if (contentType.includes("multipart/form-data")) {
+    const formData = await req.formData();
+    return Object.fromEntries(formData.entries()) as Record<string, unknown>;
+  }
+
+  const text = await req.text();
+  if (!text) return {} as Record<string, unknown>;
+
+  try {
+    return JSON.parse(text) as Record<string, unknown>;
+  } catch {
+    return {} as Record<string, unknown>;
+  }
 };
 
 const getProductId = async (
@@ -14,32 +33,40 @@ const getProductId = async (
   return Number(Array.isArray(idParam) ? idParam[0] : idParam);
 };
 
-const formatAddon = (row: any) => ({
-  id: row.addon_id,
-  label: row.addon_label,
-  price: Number(row.addon_price),
-  is_default: row.addon_is_default,
-  sort_order: row.addon_sort_order,
-  image_url: getSignedImageUrl(row.addon_image_url),
-});
+const formatAddon = (row: DBAddOns) => {
+  const addonRow = (row ?? {}) as DBAddOns;
 
-const formatProduct = (row: any) => ({
-  id: row.id ?? null,
-  name: row.name,
-  price: Number(row.price),
-  oldPrice: row.old_price ? Number(row.old_price) : undefined,
-  category: row.category,
-  productType: row.product_type ?? "others",
-  imageUrl: getSignedImageUrl(row.image_url),
-  badge: row.badge,
-  rating: row.rating,
-  reviews: row.reviews,
-  description: row.description,
-  icon: row.icon,
-  createdAt: row.created_at,
-  updatedAt: row.updated_at,
-  productNumber: row.product_number,
-});
+  return {
+    id: addonRow.id,
+    label: addonRow.label,
+    price: Number(addonRow.price),
+    is_default: addonRow.is_default,
+    sort_order: addonRow.sort_order,
+    image_url: getSignedImageUrl(addonRow.image_url),
+  };
+};
+
+const formatProduct = (row: DProduct) => {
+  const productRow = (row ?? {}) as DProduct;
+
+  return {
+    id: productRow.id ?? null,
+    name: productRow.name,
+    price: Number(productRow.price),
+    oldPrice: productRow.old_price ? Number(productRow.old_price) : undefined,
+    category: productRow.category,
+    productType: productRow.product_type ?? "others",
+    imageUrl: getSignedImageUrl(productRow.image_url),
+    badge: productRow.badge,
+    rating: productRow.rating,
+    reviews: productRow.reviews,
+    description: productRow.description,
+    icon: productRow.icon,
+    createdAt: productRow.created_at,
+    updatedAt: productRow.updated_at,
+    productNumber: productRow.product_number,
+  };
+};
 
 export async function GET(req: NextRequest, { params }: ProductRouteContext) {
   const routeParams = await params;
@@ -57,14 +84,14 @@ export async function GET(req: NextRequest, { params }: ProductRouteContext) {
     .where({ "p.id": productId })
     .select(
       "p.*",
-      "pa.id as addon_id",
-      "pa.label as addon_label",
-      "pa.price as addon_price",
-      "pa.is_default as addon_is_default",
-      "pa.sort_order as addon_sort_order",
-      "pa.is_active as addon_is_active",
-      "pa.is_deleted as addon_is_deleted",
-      "pa.image_url as addon_image_url",
+      "pa.id as id",
+      "pa.label as label",
+      "pa.price as price",
+      "pa.is_default as is_default",
+      "pa.sort_order as sort_order",
+      "pa.is_active as is_active",
+      "pa.is_deleted as is_deleted",
+      "pa.image_url as image_url",
     );
 
   if (!rows || rows.length === 0) {
@@ -91,7 +118,7 @@ export async function PUT(req: NextRequest, { params }: ProductRouteContext) {
     );
   }
 
-  const body = await req.json();
+  const body = await getRequestBody(req);
   const updatePayload: Record<string, unknown> = {};
 
   if (body.name) updatePayload.name = body.name;

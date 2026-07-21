@@ -7,6 +7,39 @@ export interface AddOn {
   imageUrl?: string;
 }
 
+export interface DBAddOns {
+  id: number;
+  product_id: number;
+  label: string;
+  price: number;
+  is_default: boolean;
+  sort_order: number;
+  is_active: boolean;
+  is_deleted: boolean;
+  image_url: string;
+}
+
+export interface DProduct {
+  id: number;
+  name: string;
+  price: number;
+  old_price?: number;
+  category: string;
+  product_type?: string;
+  image: string;
+  badge?: string;
+  rating: number;
+  reviews: number;
+  description: string;
+  icon: string;
+  created_at?: Date;
+  updated_at?: Date;
+  add_ons?: DBAddOns[];
+  image_url?: string;
+  in_stock?: boolean;
+  product_number?: string;
+}
+
 export interface Product {
   id: number;
   name: string;

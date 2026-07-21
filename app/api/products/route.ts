@@ -3,23 +3,45 @@ import db from "@/lib/db";
 import { getSignedImageUrl } from "@/lib/cloudinary";
 import { createProductNumber } from "@/lib/productNumber";
 
-const formatProduct = (row: any) => ({
-  id: row.id ?? null,
-  name: row.name,
-  price: Number(row.price),
-  oldPrice: row.old_price ? Number(row.old_price) : undefined,
-  category: row.category,
-  productType: row.product_type ?? "others",
-  imageUrl: getSignedImageUrl(row.image_url),
-  badge: row.badge,
-  rating: row.rating,
-  reviews: row.reviews,
-  description: row.description,
-  icon: row.icon,
-  createdAt: row.created_at,
-  updatedAt: row.updated_at,
-  productNumber: row.product_number,
-});
+const getRequestBody = async (req: NextRequest) => {
+  const contentType = req.headers.get("content-type") || "";
+
+  if (contentType.includes("multipart/form-data")) {
+    const formData = await req.formData();
+    return Object.fromEntries(formData.entries()) as Record<string, unknown>;
+  }
+
+  const text = await req.text();
+  if (!text) return {} as Record<string, unknown>;
+
+  try {
+    return JSON.parse(text) as Record<string, unknown>;
+  } catch {
+    return {} as Record<string, unknown>;
+  }
+};
+
+const formatProduct = (row: Record<string, unknown> | null | undefined) => {
+  const productRow = (row ?? {}) as Record<string, unknown>;
+
+  return {
+    id: productRow.id ?? null,
+    name: productRow.name,
+    price: Number(productRow.price),
+    oldPrice: productRow.old_price ? Number(productRow.old_price) : undefined,
+    category: productRow.category,
+    productType: productRow.product_type ?? "others",
+    imageUrl: getSignedImageUrl(productRow.image_url),
+    badge: productRow.badge,
+    rating: productRow.rating,
+    reviews: productRow.reviews,
+    description: productRow.description,
+    icon: productRow.icon,
+    createdAt: productRow.created_at,
+    updatedAt: productRow.updated_at,
+    productNumber: productRow.product_number,
+  };
+};
 
 export async function GET() {
   const rows = await db("products").select("*");
@@ -28,7 +50,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  const body = await getRequestBody(req);
   const name = body.name?.toString().trim();
   const category = body.category?.toString().trim();
   const price = Number(body.price ?? 0);
