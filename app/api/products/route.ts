@@ -23,23 +23,39 @@ const getRequestBody = async (req: NextRequest) => {
 
 const formatProduct = (row: Record<string, unknown> | null | undefined) => {
   const productRow = (row ?? {}) as Record<string, unknown>;
+  const imageUrl =
+    typeof productRow.image_url === "string"
+      ? productRow.image_url
+      : typeof productRow.imageUrl === "string"
+        ? productRow.imageUrl
+        : undefined;
 
   return {
     id: productRow.id ?? null,
-    name: productRow.name,
-    price: Number(productRow.price),
+    name: typeof productRow.name === "string" ? productRow.name : "",
+    price: Number(productRow.price ?? 0),
     oldPrice: productRow.old_price ? Number(productRow.old_price) : undefined,
-    category: productRow.category,
-    productType: productRow.product_type ?? "others",
-    imageUrl: getSignedImageUrl(productRow.image_url),
-    badge: productRow.badge,
-    rating: productRow.rating,
-    reviews: productRow.reviews,
-    description: productRow.description,
-    icon: productRow.icon,
+    category:
+      typeof productRow.category === "string" ? productRow.category : "",
+    productType:
+      typeof productRow.product_type === "string"
+        ? productRow.product_type
+        : "others",
+    imageUrl: getSignedImageUrl(imageUrl),
+    badge: typeof productRow.badge === "string" ? productRow.badge : undefined,
+    rating: Number(productRow.rating ?? 5),
+    reviews: Number(productRow.reviews ?? 0),
+    description:
+      typeof productRow.description === "string"
+        ? productRow.description
+        : undefined,
+    icon: typeof productRow.icon === "string" ? productRow.icon : undefined,
     createdAt: productRow.created_at,
     updatedAt: productRow.updated_at,
-    productNumber: productRow.product_number,
+    productNumber:
+      typeof productRow.product_number === "string"
+        ? productRow.product_number
+        : undefined,
   };
 };
 
