@@ -1,14 +1,59 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
-import { getSignedImageUrl } from "@/lib/cloudinary";
+import cloudinary, { getSignedImageUrl } from "@/lib/cloudinary";
 import { createProductNumber } from "@/lib/productNumber";
+
+const uploadFileToCloudinary = async (file: File) => {
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  const result = await new Promise<{ secure_url: string }>(
+    (resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "products",
+          resource_type: "auto",
+        },
+        (error, uploadResult) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          if (!uploadResult?.secure_url) {
+            reject(new Error("Cloudinary upload failed"));
+            return;
+          }
+
+          resolve(uploadResult as { secure_url: string });
+        },
+      );
+
+      uploadStream.end(buffer);
+    },
+  );
+
+  return result.secure_url;
+};
 
 const getRequestBody = async (req: NextRequest) => {
   const contentType = req.headers.get("content-type") || "";
 
   if (contentType.includes("multipart/form-data")) {
     const formData = await req.formData();
-    return Object.fromEntries(formData.entries()) as Record<string, unknown>;
+    const parsedBody = Object.fromEntries(formData.entries()) as Record<
+      string,
+      unknown
+    >;
+
+    const uploadPromises = Array.from(formData.entries())
+      .filter(([, value]) => value instanceof File)
+      .map(async ([fieldName, value]) => {
+        const uploadedUrl = await uploadFileToCloudinary(value as File);
+        parsedBody[fieldName] = uploadedUrl;
+      });
+
+    await Promise.all(uploadPromises);
+    return parsedBody;
   }
 
   const text = await req.text();
@@ -81,6 +126,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const mainImage =
+    typeof body.mainImage === "string"
+      ? body.mainImage
+      : typeof body.imageUrl === "string"
+        ? body.imageUrl
+        : null;
+
   const productNumber = await createProductNumber();
   const [created] = await db("products")
     .insert({
@@ -90,14 +142,69 @@ export async function POST(req: NextRequest) {
       old_price: body.oldPrice ? Number(body.oldPrice) : null,
       category,
       product_type: body.productType || "others",
-      image_url: body.imageUrl || null,
+      image_url: mainImage,
       badge: body.badge || null,
       rating: body.rating ? Number(body.rating) : 0,
       description: body.description || null,
     })
     .returning("*");
 
-  const product = formatProduct(created);
+  const insertedAddons: Array<Record<string, unknown>> = [];
+
+  try {
+    const addons =
+      typeof body.addons === "string"
+        ? JSON.parse(body.addons)
+        : Array.isArray(body.addons)
+          ? body.addons
+          : [];
+
+    if (Array.isArray(addons) && addons.length > 0) {
+      for (const addon of addons) {
+        if (!addon || typeof addon !== "object") continue;
+
+        const addonRecord = addon as Record<string, unknown>;
+        const tempId = addonRecord.tempId;
+        const addonImageField =
+          tempId !== undefined && tempId !== null
+            ? `addonImage_new_${tempId}`
+            : addonRecord.id !== undefined && addonRecord.id !== null
+              ? `addonImage_${addonRecord.id}`
+              : null;
+
+        const addonImageUrl =
+          addonImageField && typeof body[addonImageField] === "string"
+            ? body[addonImageField]
+            : typeof addonRecord.imageUrl === "string"
+              ? addonRecord.imageUrl
+              : null;
+
+        const [insertedAddon] = await db("product_addons")
+          .insert({
+            product_id: created.id,
+            label: addonRecord.label ?? null,
+            price: addonRecord.price ? Number(addonRecord.price) : 0,
+            is_default: Boolean(addonRecord.isDefault),
+            sort_order: addonRecord.sortOrder
+              ? Number(addonRecord.sortOrder)
+              : 0,
+            is_active: true,
+            image_url: addonImageUrl,
+          })
+          .returning("*");
+
+        insertedAddons.push(insertedAddon);
+      }
+    }
+  } catch (error) {
+    console.error("Error inserting addons:", error);
+  }
+
+  const product = formatProduct({
+    ...created,
+    addons: insertedAddons,
+  });
+
   return NextResponse.json(
     { status: "success", data: { product } },
     { status: 201 },

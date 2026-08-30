@@ -33,38 +33,60 @@ const getProductId = async (
   return Number(Array.isArray(idParam) ? idParam[0] : idParam);
 };
 
-const formatAddon = (row: DBAddOns) => {
-  const addonRow = (row ?? {}) as DBAddOns;
+const formatAddon = (row: Record<string, unknown>) => {
+  const addonRow = (row ?? {}) as Record<string, unknown>;
 
   return {
-    id: addonRow.id,
-    label: addonRow.label,
-    price: Number(addonRow.price),
-    is_default: addonRow.is_default,
-    sort_order: addonRow.sort_order,
-    image_url: getSignedImageUrl(addonRow.image_url),
+    id: addonRow.addon_id ?? addonRow.id,
+    label: addonRow.addon_label ?? addonRow.label,
+    price: Number(addonRow.addon_price ?? addonRow.price ?? 0),
+    is_default: Boolean(addonRow.addon_is_default ?? addonRow.is_default),
+    sort_order: Number(addonRow.addon_sort_order ?? addonRow.sort_order ?? 0),
+    image_url: getSignedImageUrl(
+      typeof addonRow.addon_image_url === "string"
+        ? addonRow.addon_image_url
+        : typeof addonRow.image_url === "string"
+          ? addonRow.image_url
+          : undefined,
+    ),
   };
 };
 
-const formatProduct = (row: DProduct) => {
-  const productRow = (row ?? {}) as DProduct;
+const formatProduct = (row: DProduct | Record<string, unknown>) => {
+  const productRow = (row ?? {}) as Record<string, unknown>;
 
   return {
     id: productRow.id ?? null,
-    name: productRow.name,
-    price: Number(productRow.price),
+    name: typeof productRow.name === "string" ? productRow.name : "",
+    price: Number(productRow.price ?? 0),
     oldPrice: productRow.old_price ? Number(productRow.old_price) : undefined,
-    category: productRow.category,
-    productType: productRow.product_type ?? "others",
-    imageUrl: getSignedImageUrl(productRow.image_url),
-    badge: productRow.badge,
-    rating: productRow.rating,
-    reviews: productRow.reviews,
-    description: productRow.description,
-    icon: productRow.icon,
+    category:
+      typeof productRow.category === "string" ? productRow.category : "",
+    productType:
+      typeof productRow.product_type === "string"
+        ? productRow.product_type
+        : "others",
+    imageUrl: getSignedImageUrl(
+      typeof productRow.image_url === "string"
+        ? productRow.image_url
+        : typeof productRow.imageUrl === "string"
+          ? productRow.imageUrl
+          : undefined,
+    ),
+    badge: typeof productRow.badge === "string" ? productRow.badge : undefined,
+    rating: Number(productRow.rating ?? 5),
+    reviews: Number(productRow.reviews ?? 0),
+    description:
+      typeof productRow.description === "string"
+        ? productRow.description
+        : undefined,
+    icon: typeof productRow.icon === "string" ? productRow.icon : undefined,
     createdAt: productRow.created_at,
     updatedAt: productRow.updated_at,
-    productNumber: productRow.product_number,
+    productNumber:
+      typeof productRow.product_number === "string"
+        ? productRow.product_number
+        : undefined,
   };
 };
 
@@ -84,14 +106,14 @@ export async function GET(req: NextRequest, { params }: ProductRouteContext) {
     .where({ "p.id": productId })
     .select(
       "p.*",
-      "pa.id as id",
-      "pa.label as label",
-      "pa.price as price",
-      "pa.is_default as is_default",
-      "pa.sort_order as sort_order",
-      "pa.is_active as is_active",
-      "pa.is_deleted as is_deleted",
-      "pa.image_url as image_url",
+      "pa.id as addon_id",
+      "pa.label as addon_label",
+      "pa.price as addon_price",
+      "pa.is_default as addon_is_default",
+      "pa.sort_order as addon_sort_order",
+      "pa.is_active as addon_is_active",
+      "pa.is_deleted as addon_is_deleted",
+      "pa.image_url as addon_image_url",
     );
 
   if (!rows || rows.length === 0) {

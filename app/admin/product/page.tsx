@@ -1056,20 +1056,22 @@ const AdminProducts: React.FC = () => {
                     gap: "1rem",
                   }}
                 >
-                  <img
-                    src={
-                      product.imageUrl ||
-                      (product as Product & { image?: string }).image ||
-                      ""
-                    }
-                    alt=""
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      objectFit: "cover",
-                      borderRadius: "0.3rem",
-                    }}
-                  />
+                  {product.imageUrl && (
+                    <img
+                      src={
+                        product.imageUrl ||
+                        (product as Product & { image?: string }).image ||
+                        ""
+                      }
+                      alt=""
+                      style={{
+                        objectFit: "cover",
+                        borderRadius: "0.3rem",
+                        width: "50px",
+                        height: "50px",
+                      }}
+                    />
+                  )}
                   <div>
                     <div style={{ fontWeight: "600" }}>{product.name}</div>
                     <div
