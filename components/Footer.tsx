@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { apiClient } from "@/services/apiClient";
 import "./Footer.scss";
+import { CloudUpload, Sparkles } from "lucide-react";
 
 const Footer: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -108,7 +108,9 @@ const Footer: React.FC = () => {
               master makers will twist it into reality.
             </p>
             <div className="footer-cta__highlight">
-              <span className="material-symbols-outlined">auto_awesome</span>
+              <span className="material-symbols-outlined">
+                <Sparkles />
+              </span>
               <p>Unique pieces crafted just for you</p>
             </div>
           </div>
@@ -184,7 +186,7 @@ const Footer: React.FC = () => {
                       <img src={imagePreview} alt="Preview" />
                       <div className="footer-form__upload-overlay">
                         <span className="material-symbols-outlined">
-                          cloud_upload
+                          <CloudUpload />
                         </span>
                         <p>Change Image</p>
                       </div>
@@ -192,7 +194,7 @@ const Footer: React.FC = () => {
                   ) : (
                     <div className="footer-form__upload-inner">
                       <span className="material-symbols-outlined">
-                        cloud_upload
+                        <CloudUpload />
                       </span>
                       <p className="footer-form__upload-hint">
                         Click to upload or drag and drop

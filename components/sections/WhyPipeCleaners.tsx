@@ -1,5 +1,6 @@
 "use client";
 
+import { DraftingCompass, Infinity, Leaf, Palette } from "lucide-react";
 import React from "react";
 
 const WhyPipeCleaners: React.FC = () => {
@@ -9,7 +10,9 @@ const WhyPipeCleaners: React.FC = () => {
         <div className="why-section__cards">
           <div className="why-section__col">
             <div className="why-card ambient-shadow">
-              <span className="material-symbols-outlined">all_inclusive</span>
+              <span className="material-symbols-outlined">
+                <Infinity />
+              </span>
               <h3 className="why-card__title">Never Fade</h3>
               <p className="why-card__text">
                 Vibrant beauty that lasts forever without a single drop of
@@ -17,7 +20,9 @@ const WhyPipeCleaners: React.FC = () => {
               </p>
             </div>
             <div className="why-card ambient-shadow">
-              <span className="material-symbols-outlined">palette</span>
+              <span className="material-symbols-outlined">
+                <Palette />
+              </span>
               <h3 className="why-card__title">Unique Textures</h3>
               <p className="why-card__text">
                 The soft, fuzzy tactile feel of felt and wire in artistic
@@ -27,14 +32,18 @@ const WhyPipeCleaners: React.FC = () => {
           </div>
           <div className="why-section__col why-section__col--offset">
             <div className="why-card ambient-shadow">
-              <span className="material-symbols-outlined">eco</span>
+              <span className="material-symbols-outlined">
+                <Leaf />
+              </span>
               <h3 className="why-card__title">Eco-Conscious</h3>
               <p className="why-card__text">
                 Sustainable materials crafted to minimize environmental waste.
               </p>
             </div>
             <div className="why-card ambient-shadow">
-              <span className="material-symbols-outlined">architecture</span>
+              <span className="material-symbols-outlined">
+                <DraftingCompass />
+              </span>
               <h3 className="why-card__title">Fully Pliable</h3>
               <p className="why-card__text">
                 Bend, twist, and reshape your stems to fit any vase or vision.

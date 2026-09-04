@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStore } from "@/store/useStore";
 import "./Navbar.scss";
+import { ShoppingCart } from "lucide-react";
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -51,7 +52,9 @@ const Navbar: React.FC = () => {
             className="site-nav__cart press-effect"
             aria-label="Cart"
           >
-            <span className="material-symbols-outlined">shopping_cart</span>
+            <span className="material-symbols-outlined">
+              <ShoppingCart />
+            </span>
             {getCartCount() > 0 && (
               <span className="site-nav__cart-badge">{getCartCount()}</span>
             )}
