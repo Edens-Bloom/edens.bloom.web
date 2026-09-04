@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "../styles/main.scss";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const roboto = Roboto({
+const jakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "700"],
-  variable: "--font-roboto",
+  variable: "--font-jakarta",
   subsets: ["latin"],
 });
 
@@ -24,7 +24,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${roboto.variable} h-full antialiased`}
+      className={`${jakarta.variable} h-full antialiased`}
     >
       <body
         suppressHydrationWarning

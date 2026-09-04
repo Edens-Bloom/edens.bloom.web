@@ -787,44 +787,33 @@
 
 .product-card {
   width: 100%;
-  max-width: none;
-  padding: 0.5rem 0.4rem;
+  max-width: 320px;
+  justify-self: center;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  transition: box-shadow 0.3s ease;
-  box-shadow: 0 5px 5px 2px rgba(211, 211, 211, 0.4);
-  border-radius: 12px;
-  background: $color-surface-container-lowest;
+  border: 0.5px solid #e5dacb;
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color $transition-fast;
 
-  @media (min-width: $bp-sm) {
-    padding: 20px 10px;
-    gap: 5px;
-    border-radius: 5px;
-    max-width: 320px;
-  }
-
-  &:hover .product-card__media-link img {
-    transform: scale(1.05);
+  &:hover {
+    border-color: #c9b8a7;
   }
 }
 
 .product-card__media {
   position: relative;
-  aspect-ratio: 6 / 5;
-  border-radius: $radius-card;
+  aspect-ratio: 1;
   overflow: hidden;
-  background: $color-surface-container;
-
-  @media (min-width: $bp-sm) {
-    aspect-ratio: 3 / 4;
-  }
+  display: grid;
+  place-items: center;
+  background: #f3e9e0;
 }
 
 .product-card__media-link {
   position: absolute;
   inset: 0;
-  z-index: 1;
   display: block;
   text-decoration: none;
   color: inherit;
@@ -833,182 +822,132 @@
 .product-card__media-link img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  transition: transform 0.5s ease;
-
-  @media (min-width: $bp-sm) {
-    object-fit: cover;
-  }
+  object-fit: cover;
+  display: block;
 }
 
-.product-card__meta-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  text-decoration: none;
-  color: inherit;
-  transition: color $transition-fast;
-  width: 100%;
-
-  &:hover .product-card__title {
-    color: $color-primary;
-  }
-}
-
-.product-card__info {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  min-width: 0;
-}
-
-.product-card__view-btn {
-  @include type-label-md;
-  background: #c58b73;
-  color: white;
-  padding: 0.45rem 0.65rem;
-  border-radius: $radius-sm;
-  white-space: nowrap;
-  // flex-shrink: 0;
-  width: 100%;
-  transition: background $transition-fast;
-  font-size: 0.72rem;
-
-  @media (min-width: $bp-sm) {
-    padding: 0.6rem 0.9rem;
-    font-size: inherit;
-  }
-
-  &:hover {
-    background: #c58b73;
-  }
+.product-card__image-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #a8988a;
 }
 
 .product-card__badge {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: $color-tertiary;
-  color: $color-on-tertiary;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #993556;
+  color: #fbeaf0;
   font-size: 10px;
   font-weight: 700;
-  padding: 0.25rem 0.75rem;
-  border-radius: $radius-pill;
-  text-transform: uppercase;
-  z-index: 3;
-  font-family: $font-sans;
-
-  &--sale {
-    background: #b01212;
-    color: #fff;
-  }
-  &--new {
-    background: #12b032;
-    color: #fff;
-  }
-  &--hot {
-    background: #c9a139;
-    color: #fff;
-  }
-  &--limited {
-    background: #2c2c2c;
-    color: #fff;
-  }
-  &--soldout {
-    background: $color-tertiary;
-    color: $color-on-tertiary;
-  }
+  line-height: 1;
 }
 
-.product-card__overlay {
+.product-card__content {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.product-card__category {
+  color: #a8988a;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.product-card__wishlist {
   position: absolute;
-  inset: 0;
+  top: 10px;
+  right: 10px;
   z-index: 2;
-  background: rgba($color-on-background, 0.2);
-  opacity: 0;
-  transition: opacity $transition-medium;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #c2185b;
+}
+
+.product-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.product-card__view-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #c98a72;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.product-card__quick-add {
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
-}
-
-.product-card__add {
-  pointer-events: auto;
-  @include type-label-md;
-  background: $color-primary;
-  color: $color-on-primary;
-  padding: 0.75rem 1.5rem;
-  border-radius: $radius-pill;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: $font-sans;
-  transform: translateY(1rem);
-  transition:
-    transform $transition-medium,
-    background $transition-fast;
-
-  &--accent {
-    background: $color-tertiary;
-  }
+  flex: 0 0 38px;
+  border: 1px solid #e5dacb;
+  border-radius: 9px;
+  color: #7b4b3a;
 }
 
 .product-card__title {
-  @include type-headline-lg;
-  font-size: 13px;
-  color: $color-on-background;
+  color: #3a2a20;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.25;
-
-  @media (min-width: $bp-sm) {
-    font-size: 20px;
-    line-height: inherit;
-  }
 }
 
-.product-card__product-number {
-  @include type-headline-lg;
-  font-size: 7px;
-  color: #999;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: 0.02em;
-  text-align: left;
-  margin: 3px 0;
-  display: block;
-
-  @media (min-width: $bp-sm) {
-    font-size: 10px;
-  }
-}
-
-.product-card__price-row {
+.product-card__rating {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 5px;
+  color: #a8988a;
+  font-size: 11px;
+}
+
+.product-card__stars {
+  display: flex;
+  gap: 1px;
+  color: #d8cbbb;
+  font-size: 12px;
+  line-height: 1;
+  .is-filled {
+    color: #ef9f27;
+  }
 }
 
 .product-card__price {
-  color: $color-primary;
+  color: #7b4b3a;
   font-weight: 700;
-  font-family: $font-sans;
-
-  font-size: 0.75rem;
-
-  @media (min-width: $bp-sm) {
-    font-size: inherit;
-  }
+  font-size: 16px;
 }
 
 .product-card__old-price {
-  color: $color-outline;
-  font-size: 0.7rem;
+  color: #c2185b;
+  font-size: 12px;
   text-decoration: line-through;
 }
 

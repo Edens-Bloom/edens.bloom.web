@@ -28,6 +28,7 @@ export interface DProduct {
   product_type?: string;
   image: string;
   badge?: string;
+  isNew?: boolean;
   rating: number;
   reviews: number;
   description: string;
@@ -52,6 +53,7 @@ export interface Product {
   imageUrl?: string;
   image_url?: string;
   badge?: string;
+  isNew?: boolean;
   rating: number;
   reviews?: number;
   description?: string;
@@ -146,6 +148,7 @@ export interface BloomState {
   ) => Promise<boolean>;
   deleteProduct: (id: number) => Promise<boolean>;
   addToCart: (product: SelectedProduct) => void;
+  toggleWishlist: (productId: number) => void;
   removeFromCart: (item: SelectedProduct) => void;
   updateCart: (product: SelectedProduct) => void;
   clearCart: () => void;

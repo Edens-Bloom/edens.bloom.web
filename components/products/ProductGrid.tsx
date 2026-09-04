@@ -6,7 +6,7 @@ import { useStore } from "@/store/useStore";
 import { ShoppingBag, X } from "lucide-react";
 import type { Product, SelectedProduct } from "@/types";
 import { formatRs } from "@/utils/formatRs";
-import Badge, { type BadgeType } from "./Badge";
+import ProductCard from "./ProductCard";
 import "./ProductGrid.scss";
 import calculatePrice from "@/utils/calculatePrice";
 import { DNA } from "react-loader-spinner";
@@ -176,67 +176,11 @@ const ProductGrid: React.FC = () => {
             })
             .map((product) => {
               return (
-                <div key={product.id} className="product-card fade-up visible">
-                  <div className="product-card__media ambient-shadow felt-texture">
-                    <button
-                      type="button"
-                      className="product-card__media-link"
-                      aria-label={`View ${product.name}`}
-                      onClick={() => handleProductClick(product)}
-                    >
-                      <img
-                        src={product.imageUrl || "/next.svg"}
-                        alt={product.name}
-                      />
-                    </button>
-                    {product.badge && (
-                      <Badge type={product.badge as BadgeType} />
-                    )}
-                  </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "0.5rem",
-                      alignContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div className="product-card__info">
-                      <h4 className="product-card__title" title={product.name}>
-                        {product.name}
-                      </h4>
-                    </div>
-                    <div className="product-card__price-row">
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.5rem",
-                        }}
-                      >
-                        {product.oldPrice && (
-                          <span className="product-card__old-price">
-                            {formatRs(Number(product.oldPrice))}
-                          </span>
-                        )}
-                        <span className="product-card__price">
-                          {formatRs(product.price)}
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className="product-card__meta-link"
-                      onClick={() => handleProductClick(product)}
-                    >
-                      <span className="product-card__view-btn">
-                        View Detail
-                      </span>
-                    </button>
-                  </div>
-                </div>
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onViewDetail={() => handleProductClick(product)}
+                />
               );
             })}
         </div>
@@ -568,7 +512,7 @@ const ProductGrid: React.FC = () => {
                                                   addon.price ?? 0,
                                                 ),
                                                 selectedImageUrl:
-                                                  addon.imageUrl,
+                                                  addon.image_url,
                                               }),
                                             )
                                           }
