@@ -318,14 +318,14 @@ const ProductGrid: React.FC = () => {
                                         selectedAddOnPrice: Number(
                                           addon.price ?? 0,
                                         ),
-                                        selectedImageUrl: addon.imageUrl,
+                                        selectedImageUrl: addon.image_url,
                                       }),
                                     )
                                   }
                                   aria-label={`View image ${i + 1}`}
                                 >
                                   <img
-                                    src={addon.imageUrl || "/next.svg"}
+                                    src={addon.image_url || "/next.svg"}
                                     alt=""
                                   />
                                 </button>
@@ -502,6 +502,17 @@ const ProductGrid: React.FC = () => {
                                         checked={
                                           !selectedProduct?.selectedAddOnId
                                         }
+                                        onChange={() =>
+                                          updateSelected(
+                                            calculatePrice({
+                                              ...selectedProduct,
+                                              selectedAddOnId: null,
+                                              selectedAddOnPrice: 0,
+                                              selectedImageUrl:
+                                                selectedProduct?.imageUrl || "",
+                                            }),
+                                          )
+                                        }
                                       />
                                       <div>
                                         <div className="product-modal__pack-label">
@@ -547,6 +558,19 @@ const ProductGrid: React.FC = () => {
                                           checked={
                                             selectedProduct?.selectedAddOnId ===
                                             addon.id
+                                          }
+                                          onChange={() =>
+                                            updateSelected(
+                                              calculatePrice({
+                                                ...selectedProduct,
+                                                selectedAddOnId: addon.id ?? 0,
+                                                selectedAddOnPrice: Number(
+                                                  addon.price ?? 0,
+                                                ),
+                                                selectedImageUrl:
+                                                  addon.imageUrl,
+                                              }),
+                                            )
                                           }
                                         />
                                         <div>

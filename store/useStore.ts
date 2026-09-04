@@ -211,23 +211,6 @@ export const useStore = create<BloomState>((set, get) => ({
   },
 
   fetchProductById: async (id, isSelected = false) => {
-    const existing = get().products.find((product) => product.id === id);
-    if (existing && isSelected) {
-      set(
-        produce((state: BloomState) => {
-          state.selectedProduct = {
-            ...existing,
-            selectedAddOnId: null,
-            selectedAddOnPrice: 0,
-            selectedImageUrl: existing.imageUrl || "",
-            quantity: 1,
-            subTotal: existing.price,
-          };
-        }),
-      );
-      return;
-    }
-
     set(
       produce((state: BloomState) => {
         state.loading.fetchById = true;

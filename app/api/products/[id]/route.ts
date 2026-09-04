@@ -1,7 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
-import { getSignedImageUrl } from "@/lib/cloudinary";
+import cloudinary, { getSignedImageUrl } from "@/lib/cloudinary";
 import { DBAddOns, DProduct, Product } from "@/types";
+
+const uploadFileToCloudinary = async (file: File) => {
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  const result = await new Promise<{ secure_url: string }>(
+    (resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "products",
+          resource_type: "auto",
+        },
+        (error, uploadResult) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          if (!uploadResult?.secure_url) {
+            reject(new Error("Cloudinary upload failed"));
+            return;
+          }
+
+          resolve(uploadResult as { secure_url: string });
+        },
+      );
+
+      uploadStream.end(buffer);
+    },
+  );
+
+  return result.secure_url;
+};
 
 type ProductRouteContext = {
   params?: Promise<{ id?: string | string[] | undefined }>;
@@ -12,7 +44,20 @@ const getRequestBody = async (req: NextRequest) => {
 
   if (contentType.includes("multipart/form-data")) {
     const formData = await req.formData();
-    return Object.fromEntries(formData.entries()) as Record<string, unknown>;
+    const parsedBody = Object.fromEntries(formData.entries()) as Record<
+      string,
+      unknown
+    >;
+
+    const uploadPromises = Array.from(formData.entries())
+      .filter(([, value]) => value instanceof File)
+      .map(async ([fieldName, value]) => {
+        const uploadedUrl = await uploadFileToCloudinary(value as File);
+        parsedBody[fieldName] = uploadedUrl;
+      });
+
+    await Promise.all(uploadPromises);
+    return parsedBody;
   }
 
   const text = await req.text();
@@ -141,19 +186,29 @@ export async function PUT(req: NextRequest, { params }: ProductRouteContext) {
   }
 
   const body = await getRequestBody(req);
+  const productData = { ...body };
+
   const updatePayload: Record<string, unknown> = {};
 
-  if (body.name) updatePayload.name = body.name;
-  if (body.category) updatePayload.category = body.category;
+  if (body.name !== undefined && String(body.name).trim())
+    updatePayload.name = body.name;
+  if (body.category !== undefined && String(body.category).trim())
+    updatePayload.category = body.category;
   if (body.price !== undefined) updatePayload.price = Number(body.price);
   if (body.oldPrice !== undefined)
     updatePayload.old_price = Number(body.oldPrice);
-  if (body.productType) updatePayload.product_type = body.productType;
-  if (body.imageUrl !== undefined) updatePayload.image_url = body.imageUrl;
+  if (body.productType !== undefined && String(body.productType).trim())
+    updatePayload.product_type = body.productType;
   if (body.badge !== undefined) updatePayload.badge = body.badge;
   if (body.rating !== undefined) updatePayload.rating = Number(body.rating);
   if (body.description !== undefined)
     updatePayload.description = body.description;
+  if (body.inStock !== undefined) {
+    updatePayload.in_stock = body.inStock === "true" || body.inStock === true;
+  }
+  if (typeof productData.mainImage === "string") {
+    updatePayload.image_url = productData.mainImage;
+  }
 
   const [updated] = await db("products")
     .where({ id: productId })
@@ -167,9 +222,84 @@ export async function PUT(req: NextRequest, { params }: ProductRouteContext) {
     );
   }
 
+  const addons =
+    typeof body.addons === "string"
+      ? JSON.parse(body.addons)
+      : Array.isArray(body.addons)
+        ? body.addons
+        : [];
+
+  const updatedAddons: Array<Record<string, unknown>> = [];
+
+  if (Array.isArray(addons) && addons.length > 0) {
+    for (const addon of addons) {
+      if (!addon || typeof addon !== "object") continue;
+
+      const addonRecord = addon as Record<string, unknown>;
+
+      if (addonRecord.tempId !== undefined && addonRecord.tempId !== null) {
+        const [insertedAddon] = await db("product_addons")
+          .insert({
+            product_id: productId,
+            label: addonRecord.label ?? null,
+            price: addonRecord.price ? Number(addonRecord.price) : 0,
+            is_default: Boolean(addonRecord.isDefault),
+            sort_order: addonRecord.sortOrder
+              ? Number(addonRecord.sortOrder)
+              : 0,
+            is_active: true,
+            image_url:
+              typeof productData[`addonImage_new_${addonRecord.tempId}`] ===
+              "string"
+                ? (productData[
+                    `addonImage_new_${addonRecord.tempId}`
+                  ] as string)
+                : null,
+          })
+          .returning("*");
+
+        updatedAddons.push(insertedAddon);
+      } else {
+        const [updatedAddon] = await db("product_addons")
+          .where({ id: addonRecord.id, product_id: productId })
+          .update({
+            label: addonRecord.label ?? null,
+            price: addonRecord.price ? Number(addonRecord.price) : 0,
+            is_default: Boolean(addonRecord.isDefault),
+            sort_order: addonRecord.sortOrder
+              ? Number(addonRecord.sortOrder)
+              : 0,
+            is_active: true,
+            updated_at: new Date(),
+            image_url:
+              typeof productData[`addonImage_${addonRecord.id}`] === "string"
+                ? (productData[`addonImage_${addonRecord.id}`] as string)
+                : typeof addonRecord.imageUrl === "string"
+                  ? addonRecord.imageUrl
+                  : null,
+          })
+          .returning("*");
+
+        updatedAddons.push(updatedAddon);
+      }
+    }
+  }
+
+  const finalAddons = await db("product_addons")
+    .where("product_id", productId)
+    .andWhere("is_deleted", false)
+    .select("*");
+
   return NextResponse.json({
     status: "success",
-    data: { product: formatProduct(updated) },
+    data: {
+      product: {
+        ...formatProduct(updated),
+        oldPrice: updated.old_price,
+        inStock: updated.in_stock,
+        addons: finalAddons,
+      },
+    },
   });
 }
 

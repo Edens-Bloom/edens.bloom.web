@@ -835,7 +835,7 @@ const AdminProducts: React.FC = () => {
                 >
                   {addons.map((addon, idx) => (
                     <div
-                      key={addon.id}
+                      key={`addon-${addon.id}-${idx}`}
                       style={{
                         display: "grid",
                         gridTemplateColumns: "1fr 0.8fr 0.3fr 0.2fr",

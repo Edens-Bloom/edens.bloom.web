@@ -165,19 +165,14 @@ export async function POST(req: NextRequest) {
 
         const addonRecord = addon as Record<string, unknown>;
         const tempId = addonRecord.tempId;
-        const addonImageField =
-          tempId !== undefined && tempId !== null
-            ? `addonImage_new_${tempId}`
-            : addonRecord.id !== undefined && addonRecord.id !== null
-              ? `addonImage_${addonRecord.id}`
-              : null;
 
-        const addonImageUrl =
-          addonImageField && typeof body[addonImageField] === "string"
-            ? body[addonImageField]
-            : typeof addonRecord.imageUrl === "string"
-              ? addonRecord.imageUrl
+        let imageUrl: string | null = null;
+        if (tempId !== undefined && tempId !== null) {
+          imageUrl =
+            typeof body[`addonImage_new_${tempId}`] === "string"
+              ? (body[`addonImage_new_${tempId}`] as string)
               : null;
+        }
 
         const [insertedAddon] = await db("product_addons")
           .insert({
@@ -189,7 +184,7 @@ export async function POST(req: NextRequest) {
               ? Number(addonRecord.sortOrder)
               : 0,
             is_active: true,
-            image_url: addonImageUrl,
+            image_url: imageUrl,
           })
           .returning("*");
 

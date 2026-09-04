@@ -2,10 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-// We remove designRequestService import for now, or use a dummy API since it was in React but Next might have it differently.
-// The user said: "No there is no server for next app (use your own services and database access in next app itself)"
-// I'll keep the UI for the form but maybe not call the exact service if it's not present, or if it is present, I should check.
-// Let's check if services/designRequestService exists. It probably doesn't because I only saw auth, product, order. I'll mock it.
+import { apiClient } from "@/services/apiClient";
 import "./Footer.scss";
 
 const Footer: React.FC = () => {
@@ -63,8 +60,18 @@ const Footer: React.FC = () => {
 
     setLoading(true);
     try {
-      // Mocking submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const formPayload = new FormData();
+      formPayload.append("full_name", formData.full_name);
+      formPayload.append("phone", formData.phone);
+      formPayload.append("email", formData.email);
+      formPayload.append("description", formData.description);
+
+      if (formData.image) {
+        formPayload.append("image", formData.image);
+      }
+
+      await apiClient.post("/api/design-requests", formPayload);
+
       setSuccessMessage(
         "✨ Thank you! Your design request has been submitted!",
       );
