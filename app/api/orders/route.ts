@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import { getSignedImageUrl } from "@/lib/cloudinary";
 import { generateOrderNumber } from "@/lib/orderNumber";
 
 export async function POST(req: NextRequest) {
@@ -109,5 +110,53 @@ export async function GET(req: NextRequest) {
     .leftJoin("customers", "orders.customer_id", "customers.id")
     .orderBy("orders.created_at", "desc");
 
-  return NextResponse.json({ status: "success", data: { orders } });
+  const orderIds = orders.map((order: { id: number }) => order.id);
+  let ordersWithItems = orders;
+
+  if (orderIds.length > 0) {
+    const orderItems = await db("order_items")
+      .select(
+        "order_items.*",
+        "products.name as product_name",
+        "products.image_url",
+        "product_addons.id as addon_record_id",
+        "product_addons.label as addon_label",
+        "product_addons.price as addon_price",
+        "product_addons.image_url as addon_image_url",
+      )
+      .leftJoin("products", "order_items.product_id", "products.id")
+      .leftJoin("product_addons", "order_items.addon_id", "product_addons.id")
+      .whereIn("order_items.order_id", orderIds);
+
+    const itemsByOrder: Record<number, Array<Record<string, unknown>>> = {};
+
+    for (const item of orderItems) {
+      const orderId = item.order_id as number;
+      const itemWithImages = {
+        ...item,
+        image_url: getSignedImageUrl(item.image_url),
+        addon: item.addon_record_id
+          ? {
+              id: item.addon_record_id,
+              label: item.addon_label,
+              price: item.addon_price,
+              imageUrl: getSignedImageUrl(item.addon_image_url),
+            }
+          : null,
+      };
+
+      if (!itemsByOrder[orderId]) itemsByOrder[orderId] = [];
+      itemsByOrder[orderId].push(itemWithImages);
+    }
+
+    ordersWithItems = orders.map((order: { id: number }) => ({
+      ...order,
+      items: itemsByOrder[order.id] || [],
+    }));
+  }
+
+  return NextResponse.json({
+    status: "success",
+    data: { orders: ordersWithItems },
+  });
 }

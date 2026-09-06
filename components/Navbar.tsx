@@ -37,12 +37,20 @@ const Navbar: React.FC = () => {
             Custom
           </Link>
           {user?.role === "admin" && (
-            <Link
-              href="/admin"
-              className="site-nav__link site-nav__link--danger"
-            >
-              Manage
-            </Link>
+            <>
+              <Link
+                href="/admin"
+                className="site-nav__link site-nav__link--danger"
+              >
+                Manage
+              </Link>
+              <Link
+                href="/admin/design-requests"
+                className="site-nav__link site-nav__link--danger"
+              >
+                Designs
+              </Link>
+            </>
           )}
         </div>
 

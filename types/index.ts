@@ -106,6 +106,12 @@ export interface OrderItem {
   product_name: string;
   image_url?: string;
   addon_label?: string | null;
+  addon?: {
+    id: number;
+    label: string | null;
+    price: number;
+    imageUrl: string;
+  } | null;
 }
 
 export interface Order {

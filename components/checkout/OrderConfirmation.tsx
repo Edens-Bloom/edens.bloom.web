@@ -58,26 +58,28 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
     e.preventDefault();
     setSubmitError(null);
 
-    if (user?.name && user.phoneNumber && user.address) {
-      try {
-        setIsSubmitting(true);
-        await onConfirm();
-        clearCart();
-        setIsFormSubmitted(true);
-      } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Failed to submit order.";
-        setSubmitError(errorMessage);
-      } finally {
-        setIsSubmitting(false);
-      }
+    if (!isFormValid || isSubmitting) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await onConfirm();
+      clearCart();
+      setIsFormSubmitted(true);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to submit order.";
+      setSubmitError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const isFormValid =
-    (user?.name?.length || 0) > 2 &&
-    (user?.phoneNumber?.length || 0) === 10 &&
-    (user?.address?.length || 0) > 4;
+    (user?.name?.trim().length || 0) > 2 &&
+    (user?.phoneNumber?.trim().length || 0) === 10 &&
+    (user?.address?.trim().length || 0) > 4;
 
   return (
     <div className="modal-overlay" onClick={onClose}>

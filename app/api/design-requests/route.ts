@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import cloudinary from "@/lib/cloudinary";
+import { getCurrentUser } from "@/lib/auth";
 
 const uploadFileToCloudinary = async (file: File) => {
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -100,4 +101,33 @@ export async function POST(req: NextRequest) {
     },
     { status: 201 },
   );
+}
+
+export async function GET(req: NextRequest) {
+  const user = await getCurrentUser(req);
+
+  if (!user || user.role !== "admin") {
+    return NextResponse.json(
+      { status: "fail", message: "Unauthorized" },
+      { status: 401 },
+    );
+  }
+
+  const designRequests = await db("design_requests")
+    .select(
+      "id",
+      "full_name",
+      "phone",
+      "email",
+      "description",
+      "image_url",
+      "status",
+      "created_at",
+    )
+    .orderBy("created_at", "desc");
+
+  return NextResponse.json({
+    status: "success",
+    data: { designRequests },
+  });
 }

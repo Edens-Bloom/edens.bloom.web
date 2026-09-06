@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Eye, Loader, AlertCircle, Phone, Calendar } from "lucide-react";
 import { formatRs } from "@/utils/formatRs";
-import type { Order } from "@/types";
+import type { Order, OrderItem } from "@/types";
 import { useStore } from "@/store/useStore";
 import "./AdminOrders.scss";
 
@@ -87,7 +87,7 @@ const AdminOrders: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order: any) => (
+                {orders.map((order: Order) => (
                   <tr key={order.id} className="order-row">
                     <td className="order-number">
                       <strong>{order.order_number}</strong>
@@ -219,7 +219,7 @@ const AdminOrders: React.FC = () => {
               <div className="detail-section">
                 <h3>Items</h3>
                 <div className="order-items">
-                  {(selectedOrder.items || []).map((item: any) => {
+                  {(selectedOrder.items || []).map((item: OrderItem) => {
                     const imgUrl = item.addon
                       ? item.addon.imageUrl
                       : item.image_url;

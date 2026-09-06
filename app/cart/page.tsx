@@ -18,11 +18,7 @@ const CartPage: React.FC = () => {
   const handleCheckout = () => setIsModalOpen(true);
 
   const handleConfirmOrder = async () => {
-    try {
-      await onConfirm();
-    } catch (err: unknown) {
-      console.error("Order confirmation failed:", err);
-    }
+    await onConfirm();
   };
 
   useEffect(() => {

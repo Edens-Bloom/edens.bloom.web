@@ -8,6 +8,17 @@ export interface DesignRequest {
   image?: File;
 }
 
+export interface DesignRequestRecord {
+  id: number;
+  full_name: string;
+  phone: string;
+  email: string | null;
+  description: string;
+  image_url: string | null;
+  status: string;
+  created_at: string;
+}
+
 export const designRequestService = {
   submit: async (data: DesignRequest) => {
     const formData = new FormData();
@@ -19,5 +30,10 @@ export const designRequestService = {
 
     const response = await apiClient.post("/api/design-requests", formData);
     return response;
+  },
+
+  fetchAll: async (): Promise<DesignRequestRecord[]> => {
+    const response = await apiClient.get("/api/design-requests");
+    return response.data.designRequests;
   },
 };
