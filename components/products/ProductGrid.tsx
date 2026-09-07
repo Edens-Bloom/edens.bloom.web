@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import { useStore } from "@/store/useStore";
 import { ShoppingBag, X } from "lucide-react";
 import type { Product, SelectedProduct } from "@/types";
@@ -17,10 +18,12 @@ const getSelectedImage = (product: SelectedProduct | null) => {
   if (!product?.id) return product?.imageUrl;
   const imageSrc = product?.selectedImageUrl || product.imageUrl || "/next.svg";
   return (
-    <img
+    <Image
       src={imageSrc}
       alt={product.name}
       className="product-modal__main-img"
+      width={800}
+      height={1000}
     />
   );
 };
@@ -246,9 +249,11 @@ const ProductGrid: React.FC = () => {
                                 }
                                 aria-label={`View image ${1}`}
                               >
-                                <img
+                                <Image
                                   src={selectedProduct?.imageUrl || "/next.svg"}
                                   alt=""
+                                  width={56}
+                                  height={56}
                                 />
                               </button>
                               {selectedProduct?.addOns?.map((addon, i) => (
@@ -270,9 +275,11 @@ const ProductGrid: React.FC = () => {
                                   }
                                   aria-label={`View image ${i + 1}`}
                                 >
-                                  <img
+                                  <Image
                                     src={addon.image_url || "/next.svg"}
                                     alt=""
+                                    width={56}
+                                    height={56}
                                   />
                                 </button>
                               ))}
@@ -462,7 +469,7 @@ const ProductGrid: React.FC = () => {
                                       />
                                       <div>
                                         <div className="product-modal__pack-label">
-                                          No bag
+                                          Normal
                                         </div>
                                         <div className="product-modal__pack-price">
                                           {formatRs(

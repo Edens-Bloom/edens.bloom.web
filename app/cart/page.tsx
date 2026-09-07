@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { ShoppingBag, ArrowRight, Minus, Plus } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { formatRs } from "@/utils/formatRs";
@@ -76,10 +77,13 @@ const CartPage: React.FC = () => {
                 return (
                   <article key={`item-${item.id}-${i}`} className="cart-item">
                     <div className="item-image-carousel">
-                      <img
+                      <Image
                         src={item.selectedImageUrl}
                         alt={item.name}
                         className="carousel-image fade-in"
+                        width={300}
+                        height={300}
+                        sizes="(max-width: 768px) 100vw, 300px"
                         key={`${item.id}-${item.selectedAddOnId}`}
                       />
                     </div>

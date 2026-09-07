@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ImageOff, ShoppingBag } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import type { Product, SelectedProduct } from "@/types";
@@ -52,10 +53,12 @@ export default function ProductCard({
           href={`/products/${product.id}`}
           className="product-card__media-link"
         >
-          {product.imageUrl || product.image_url ? (
-            <img
-              src={product.imageUrl || product.image_url}
+          {product.imageUrl ? (
+            <Image
+              src={product.imageUrl}
               alt={product.name}
+              width={640}
+              height={640}
               onError={(event) => {
                 event.currentTarget.hidden = true;
                 event.currentTarget.nextElementSibling?.removeAttribute(
@@ -63,13 +66,14 @@ export default function ProductCard({
                 );
               }}
             />
-          ) : null}
-          <span
-            className="product-card__image-fallback"
-            hidden={Boolean(product.imageUrl || product.image_url)}
-          >
-            <ImageOff size={26} strokeWidth={1.5} aria-hidden="true" />
-          </span>
+          ) : (
+            <span
+              className="product-card__image-fallback"
+              hidden={Boolean(product.imageUrl || product.image_url)}
+            >
+              <ImageOff size={26} strokeWidth={1.5} aria-hidden="true" />
+            </span>
+          )}
         </Link>
       </div>
 
