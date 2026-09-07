@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "knex --knexfile knexfile.mjs migrate:latest",
+    "db:rollback": "knex --knexfile knexfile.mjs migrate:rollback",
+    "db:status": "knex --knexfile knexfile.mjs migrate:list"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.3.2",

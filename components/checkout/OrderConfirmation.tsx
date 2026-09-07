@@ -204,7 +204,10 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
             </div>
 
             <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => router.push("/")}>
+              <button
+                className="btn-secondary"
+                onClick={() => router.push("/")}
+              >
                 <ShoppingBag size={18} /> View Details
               </button>
               <button

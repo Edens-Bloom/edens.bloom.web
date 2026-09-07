@@ -9,6 +9,8 @@ import { formatRs } from "@/utils/formatRs";
 import "./Cart.scss";
 import OrderConfirmation from "@/components/checkout/OrderConfirmation";
 import type { SelectedProduct } from "@/types";
+import { Trash } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 const CartPage: React.FC = () => {
   const { cart, removeFromCart, updateCart, onConfirm } = useStore();
@@ -94,7 +96,7 @@ const CartPage: React.FC = () => {
                           aria-label={`Remove ${item.name}`}
                         >
                           <span className="material-symbols-outlined">
-                            delete
+                            <Trash size={20} />
                           </span>
                         </button>
                       </div>
@@ -195,7 +197,9 @@ const CartPage: React.FC = () => {
                 </button>
 
                 <div className="sustainability-note">
-                  <span className="material-symbols-outlined">eco</span>
+                  <span className="material-symbols-outlined">
+                    <RefreshCw size={20} />
+                  </span>
                   <p>
                     Your handcrafted stems support sustainable artistry and
                     reduction of floral waste.

@@ -2,7 +2,7 @@
 @use "sass:color";
 
 .cart-page {
-  padding-top: 10px;
+  padding-top: 90px;
   padding-bottom: 72px;
   min-height: 100vh;
   background-color: #fbf9f5;
@@ -300,11 +300,14 @@
       color: #6e625c;
       cursor: pointer;
       padding: 0.3rem;
-      border-radius: 8px;
+
+      border-radius: 50px;
       transition: color $transition-fast;
+      border: 1px solid grey;
 
       &:hover {
-        color: #ba1a1a;
+        background-color: #fff0ea;
+        box-shadow: 0 10px 20px -10px rgba(31, 24, 21, 0.45);
       }
     }
   }
@@ -355,6 +358,7 @@
     transition: color $transition-fast;
 
     &:hover {
+      box-shadow: 0 10px 20px -10px rgba(45, 36, 31, 0.45);
       color: #ba1a1a;
     }
   }

@@ -10,6 +10,8 @@ import ProductCard from "./ProductCard";
 import "./ProductGrid.scss";
 import calculatePrice from "@/utils/calculatePrice";
 import { DNA } from "react-loader-spinner";
+import { RefreshCw } from "lucide-react";
+import { Truck } from "lucide-react";
 
 const getSelectedImage = (product: SelectedProduct | null) => {
   if (!product?.id) return product?.imageUrl;
@@ -588,7 +590,7 @@ const ProductGrid: React.FC = () => {
                                 className="material-symbols-outlined"
                                 aria-hidden
                               >
-                                eco
+                                <RefreshCw size={20} />
                               </span>
                               <div className="product-modal__trust-text">
                                 <strong>Sustainable craft</strong>
@@ -600,7 +602,7 @@ const ProductGrid: React.FC = () => {
                                 className="material-symbols-outlined"
                                 aria-hidden
                               >
-                                local_shipping
+                                <Truck />
                               </span>
                               <div className="product-modal__trust-text">
                                 <strong>Delicate shipping</strong>

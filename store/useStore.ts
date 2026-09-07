@@ -5,6 +5,7 @@ import { produce } from "immer";
 import { authService } from "@/services/authService";
 import { productService } from "@/services/productService";
 import { orderService } from "@/services/orderService";
+import { wishlistService } from "@/services/wishlistService";
 import type {
   BloomState,
   CartState,
@@ -321,17 +322,53 @@ export const useStore = create<BloomState>((set, get) => ({
         state.token = loadJson<string | null>("bloom_token", null);
       }),
     );
+    void get().fetchWishlist();
   },
 
-  toggleWishlist: (productId: number) => {
+  fetchWishlist: async () => {
+    if (!get().user) return;
+
+    try {
+      const productIds = await wishlistService.fetchProductIds();
+      set(
+        produce((state: BloomState) => {
+          state.wishlist = productIds;
+        }),
+      );
+      saveJson("bloom_wishlist", productIds);
+    } catch {
+      // Keep the locally cached wishlist available if the database is unavailable.
+    }
+  },
+
+  toggleWishlist: async (productId: number) => {
+    const wasWishlisted = get().wishlist.includes(productId);
+
     set(
       produce((state: BloomState) => {
-        const index = state.wishlist.indexOf(productId);
-        if (index >= 0) state.wishlist.splice(index, 1);
-        else state.wishlist.push(productId);
+        if (wasWishlisted) {
+          state.wishlist = state.wishlist.filter((id) => id !== productId);
+        } else {
+          state.wishlist.push(productId);
+        }
         saveJson("bloom_wishlist", state.wishlist);
       }),
     );
+
+    // if (!get().user) return;
+    console.log("LOGGINg", productId);
+    try {
+      if (wasWishlisted) await wishlistService.remove(productId);
+      else await wishlistService.add(productId);
+    } catch {
+      set(
+        produce((state: BloomState) => {
+          if (wasWishlisted) state.wishlist.push(productId);
+          else state.wishlist = state.wishlist.filter((id) => id !== productId);
+          saveJson("bloom_wishlist", state.wishlist);
+        }),
+      );
+    }
   },
 
   getCartTotal: () => {
@@ -360,6 +397,7 @@ export const useStore = create<BloomState>((set, get) => ({
           state.isLoading = false;
         }),
       );
+      void get().fetchWishlist();
       return true;
     } catch (error) {
       set(
@@ -379,8 +417,10 @@ export const useStore = create<BloomState>((set, get) => ({
       produce((state: BloomState) => {
         state.user = null;
         state.token = null;
+        state.wishlist = [];
       }),
     );
+    saveJson("bloom_wishlist", []);
   },
 
   fetchOrders: async () => {

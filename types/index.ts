@@ -154,7 +154,8 @@ export interface BloomState {
   ) => Promise<boolean>;
   deleteProduct: (id: number) => Promise<boolean>;
   addToCart: (product: SelectedProduct) => void;
-  toggleWishlist: (productId: number) => void;
+  toggleWishlist: (productId: number) => Promise<void>;
+  fetchWishlist: () => Promise<void>;
   removeFromCart: (item: SelectedProduct) => void;
   updateCart: (product: SelectedProduct) => void;
   clearCart: () => void;

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ImageOff, Heart, ShoppingBag } from "lucide-react";
+import { ImageOff, ShoppingBag } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import type { Product, SelectedProduct } from "@/types";
 import { formatRs } from "@/utils/formatRs";
@@ -22,8 +22,7 @@ export default function ProductCard({
   product,
   onViewDetail,
 }: ProductCardProps) {
-  const { wishlist, toggleWishlist, addToCart } = useStore();
-  const isWishlisted = wishlist.includes(product.id);
+  const { addToCart } = useStore();
   const discount = getDiscount(product);
   const originalPrice = Number(product.oldPrice ?? product.old_price ?? 0);
   const reviewCount = product.reviews ?? 0;
@@ -49,15 +48,6 @@ export default function ProductCard({
             {discount ? `-${discount}%` : "New"}
           </span>
         ) : null}
-        <button
-          type="button"
-          className="product-card__wishlist"
-          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          aria-pressed={isWishlisted}
-          onClick={() => toggleWishlist(product.id)}
-        >
-          <Heart size={15} fill={isWishlisted ? "currentColor" : "none"} />
-        </button>
         <Link
           href={`/products/${product.id}`}
           className="product-card__media-link"
