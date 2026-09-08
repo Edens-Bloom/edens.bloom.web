@@ -26,12 +26,6 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  // const [user, setUserInfo] = useState<User>({
-  //   name: user?.name || "",
-  //   phoneNumber: user?.phoneNumber || "",
-  //   address: user?.address || "",
-  //   email: user?.email || "",
-  // });
 
   // Disable body scroll when modal is open
   useEffect(() => {
@@ -196,9 +190,9 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
 
               <div className="confirmation-message">
                 <p>
-                  We've received your order and we're getting it ready for
-                  shipment. You'll receive a confirmation email shortly with
-                  tracking details.
+                  We&apos;ve received your order and we&apos;re getting it ready
+                  for shipment. You&apos;ll receive a confirmation email shortly
+                  with tracking details.
                 </p>
               </div>
             </div>

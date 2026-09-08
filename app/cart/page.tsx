@@ -77,15 +77,17 @@ const CartPage: React.FC = () => {
                 return (
                   <article key={`item-${item.id}-${i}`} className="cart-item">
                     <div className="item-image-carousel">
-                      <Image
-                        src={item.selectedImageUrl}
-                        alt={item.name}
-                        className="carousel-image fade-in"
-                        width={300}
-                        height={300}
-                        sizes="(max-width: 768px) 100vw, 300px"
-                        key={`${item.id}-${item.selectedAddOnId}`}
-                      />
+                      {item.selectedImageUrl && (
+                        <Image
+                          src={item.selectedImageUrl}
+                          alt={item.name}
+                          className="carousel-image fade-in"
+                          width={300}
+                          height={300}
+                          sizes="(max-width: 768px) 100vw, 300px"
+                          key={`${item.id}-${item.selectedAddOnId}`}
+                        />
+                      )}
                     </div>
 
                     <div className="item-content">
@@ -219,7 +221,6 @@ const CartPage: React.FC = () => {
         <OrderConfirmation
           onClose={() => {
             setIsModalOpen(false);
-            router.push("/");
           }}
           onConfirm={handleConfirmOrder}
           total={cart.totalAmount}

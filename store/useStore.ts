@@ -79,16 +79,21 @@ export const useStore = create<BloomState>((set, get) => ({
       }),
     ),
 
-  updateUser: (updatedFields) =>
+  updateUser: (updatedFields) => {
     set(
       produce((state: BloomState) => {
-        if (state.user) {
-          state.user = { ...state.user, ...updatedFields };
-          saveJson("bloom_user", state.user);
-        }
+        state.user = state.user
+          ? { ...state.user, ...updatedFields }
+          : {
+              id: 0,
+              username: "",
+              email: "",
+              role: "user",
+              ...updatedFields,
+            };
       }),
-    ),
-
+    );
+  },
   fetchProducts: async () => {
     set(
       produce((state: BloomState) => {
