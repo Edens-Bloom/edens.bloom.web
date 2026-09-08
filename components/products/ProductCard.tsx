@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ImageOff, ShoppingBag } from "lucide-react";
@@ -24,6 +25,8 @@ export default function ProductCard({
   onViewDetail,
 }: ProductCardProps) {
   const { addToCart } = useStore();
+  const [isAdded, setIsAdded] = useState(false);
+  const addedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const discount = getDiscount(product);
   const originalPrice = Number(product.oldPrice ?? product.old_price ?? 0);
   const reviewCount = product.reviews ?? 0;
@@ -39,7 +42,25 @@ export default function ProductCard({
       subTotal: product.price,
     } as SelectedProduct);
     addToCart(selectedProduct);
+    setIsAdded(true);
+
+    if (addedTimeoutRef.current) {
+      clearTimeout(addedTimeoutRef.current);
+    }
+
+    addedTimeoutRef.current = setTimeout(() => {
+      setIsAdded(false);
+      addedTimeoutRef.current = null;
+    }, 3000);
   };
+
+  useEffect(() => {
+    return () => {
+      if (addedTimeoutRef.current) {
+        clearTimeout(addedTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <article className="product-card">
@@ -111,10 +132,11 @@ export default function ProductCard({
         <div className="product-card__actions">
           <button
             type="button"
-            className="product-card__view-btn"
+            className={`product-card__view-btn${isAdded ? " product-card__view-btn--added" : ""}`}
             onClick={onViewDetail}
+            disabled={isAdded}
           >
-            View detail
+            {isAdded ? "Added to cart" : "View detail"}
           </button>
           <button
             type="button"

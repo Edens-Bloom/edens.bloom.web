@@ -310,6 +310,13 @@ const Footer: React.FC = () => {
             </a>
           </div>
         </div>
+        <div className="site-footer__contact" id="contact">
+          <h3>Contact</h3>
+          <a href="tel:+9779861476014">9861476014</a>
+          <a href="mailto:edensbloomstore@gmail.com">
+            edensbloomstore@gmail.com
+          </a>
+        </div>
       </footer>
       <div className="site-footer__bar">
         <span>© 2026 Edens Bloom. Everlasting Handcrafted Artistry.</span>
