@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useStore } from "@/store/useStore";
 import "./Navbar.scss";
 import { ShoppingCart } from "lucide-react";
+import Logo from "./Logo";
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -22,6 +23,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className="site-nav">
       <div className="site-nav__inner">
+        <Logo />
         <Link href="/" className="site-nav__brand">
           Edens Bloom
         </Link>
