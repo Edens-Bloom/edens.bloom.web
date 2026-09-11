@@ -76,6 +76,7 @@ export default function ProductCard({
         >
           {product.imageUrl ? (
             <Image
+              className="product-card__image"
               src={product.imageUrl}
               alt={product.name}
               width={640}
