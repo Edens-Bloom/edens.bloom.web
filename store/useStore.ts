@@ -54,9 +54,17 @@ export const useStore = create<BloomState>((set, get) => ({
   token: null,
   isLoading: false,
   error: null,
+  selectedCategory: "all",
   selectedProduct: null,
   loading: { fetchById: false },
   orders: [],
+
+  setSelectedCategory: (category) =>
+    set(
+      produce((state: BloomState) => {
+        state.selectedCategory = category;
+      }),
+    ),
 
   setSelectedProduct: (product) =>
     set(

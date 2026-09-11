@@ -642,6 +642,9 @@
 }
 
 .category-tile__content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   position: absolute;
   bottom: 1.5rem;
   left: 1.5rem;
@@ -672,8 +675,8 @@
 }
 
 .category-tile__btn {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: $radius-pill;
   background: $color-surface;
   color: $color-primary;

@@ -35,6 +35,8 @@ const getCurrentPrice = (product: SelectedProduct | null): number => {
     : Number(product.price || 0);
 };
 
+const defaultCategories = ["all", "bouquet", "gift", "diy-kit", "others"];
+
 const ProductGrid: React.FC = () => {
   const {
     products,
@@ -42,6 +44,8 @@ const ProductGrid: React.FC = () => {
     isLoading,
     error,
     addToCart,
+    selectedCategory,
+    setSelectedCategory,
     fetchProductById,
     selectedProduct,
     setSelectedProduct,
@@ -49,10 +53,9 @@ const ProductGrid: React.FC = () => {
     loading: { fetchById: isFetchingById },
   } = useStore();
   const categories = new Set<string>([
-    "all",
+    ...defaultCategories,
     ...products.map((p) => p.productType || "others"),
   ]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showModal, setShowModal] = useState(false);
   const [addedFlash, setAddedFlash] = useState(false);
   useEffect(() => {
@@ -138,7 +141,7 @@ const ProductGrid: React.FC = () => {
 
   return (
     <>
-      <section className="product-grid" id="occasions">
+      <section className="product-grid" id="all-products">
         <div className="product-grid__header">
           <div className="product-grid__intro">
             <h2 className="product-grid__title">

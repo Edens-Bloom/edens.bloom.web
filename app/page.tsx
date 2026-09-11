@@ -10,7 +10,7 @@ export default function Home() {
     <div className="home-sections">
       <Hero />
       <FeatureStrip />
-      {/* <CategorySection /> */}
+      <CategorySection />
       <ProductGrid />
       <WhyPipeCleaners />
     </div>

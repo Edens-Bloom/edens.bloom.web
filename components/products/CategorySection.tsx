@@ -1,6 +1,13 @@
+"use client";
+
+import { ArrowRight } from "lucide-react";
 import React from "react";
+import { useStore } from "@/store/useStore";
+import ActionButton from "./Button";
 
 const CategorySection: React.FC = () => {
+  const setSelectedCategory = useStore((state) => state.setSelectedCategory);
+
   return (
     <section className="category-section" id="category">
       <div className="category-section__header">
@@ -14,35 +21,34 @@ const CategorySection: React.FC = () => {
         <div className="category-tile category-tile--hero ambient-shadow">
           <img
             className="category-tile__img"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgWC_DsdEMVOj91Rcyz1xmTNk2v82h9sydY38aqYAIYrp810Xmi4d2f09OC1Ik0NEjiVEiJblCDuzCPNz78BAE8TZuQGRmBjKzj3KfsDB2nWko_SkoAQvaRwPIexYx8P-yixjgvPnrU3wUb-bjyIEpDGv4Lbd_dlGLIv9hG6RzqE1DFwy_8IEBWPmPqgZp5WjnRk9jEleqlrhXxbHaFsKr7sQ7e0Wpp83yNBiqL7AVQgR90tbXBN6AZnLtVEMpCQpB1aQv5qzPUoU"
+            src="https://res.cloudinary.com/dkjqlvdxx/image/upload/v1779779468/Blue_lily_ktjqwk.jpg"
             alt="Artisan Bouquets"
           />
           <div className="category-tile__gradient" />
           <div className="category-tile__content category-tile__content--lg">
-            <h3 className="category-tile__heading">Artisan Bouquets</h3>
-            <p className="category-tile__meta">48 UNIQUE DESIGNS</p>
-            <button
-              type="button"
-              className="category-tile__btn press-effect"
-              aria-label="View category"
-            >
-              <span className="material-symbols-outlined">arrow_forward</span>
-            </button>
+            <div>
+              <h3 className="category-tile__heading">Artisan Bouquets</h3>
+              <p className="category-tile__meta">UNIQUE DESIGNS</p>
+            </div>
+            <ActionButton category="bouquet" />
           </div>
         </div>
 
         <div className="category-tile ambient-shadow">
           <img
             className="category-tile__img"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_zwMoh-9XL2e5coNP81XBwS7A2YLc2y52TF08FM5s4c1UXDU7qKFJPv3sWabYYSPnuU_js0_ZFQbNyP5ncMRM3-VTJNzjLuq3G6iRO_z5CUR1f432qMw23f2XsUnaHidT4AztYFBh-cr5vmReBxYUmXiat9AoXvZNbpBa3ikRo4BYds4lkZlcE7GcK4M_fcqrFPyyIdHXJ9FfxoqFTSvpKHFVVFokFOtlFSSQW9l6_ScRwmkV-cZRcdkzkMlbFvvi4dlVjpbduvo"
+            src="https://res.cloudinary.com/dkjqlvdxx/image/upload/v1789134652/materials_sk9w0i.jpg"
             alt="DIY Kits"
           />
           <div className="category-tile__gradient" />
           <div className="category-tile__content">
-            <h3 className="category-tile__heading category-tile__heading--sm">
-              DIY Kits
-            </h3>
-            <p className="category-tile__meta">LEARN TO TWIST</p>
+            <div>
+              <h3 className="category-tile__heading category-tile__heading--sm">
+                DIY Kits
+              </h3>
+              <p className="category-tile__meta">LEARN TO TWIST</p>
+            </div>
+            <ActionButton category="diy-kit" />
           </div>
         </div>
 
@@ -54,10 +60,13 @@ const CategorySection: React.FC = () => {
           />
           <div className="category-tile__gradient" />
           <div className="category-tile__content">
-            <h3 className="category-tile__heading category-tile__heading--sm">
-              Seasonal
-            </h3>
-            <p className="category-tile__meta">LIMITED EDITIONS</p>
+            <div>
+              <h3 className="category-tile__heading category-tile__heading--sm">
+                Gifts
+              </h3>
+              <p className="category-tile__meta">MADE JUST FOR THEM</p>
+            </div>
+            <ActionButton category="gift" />
           </div>
         </div>
 
@@ -69,10 +78,13 @@ const CategorySection: React.FC = () => {
           />
           <div className="category-tile__gradient" />
           <div className="category-tile__content">
-            <h3 className="category-tile__heading category-tile__heading--sm">
-              Custom Gifts
-            </h3>
-            <p className="category-tile__meta">MADE JUST FOR THEM</p>
+            <div>
+              <h3 className="category-tile__heading category-tile__heading--sm">
+                Custom Gifts
+              </h3>
+              <p className="category-tile__meta">MADE JUST FOR THEM</p>
+            </div>
+            <ActionButton category="custom-design" />
           </div>
         </div>
       </div>

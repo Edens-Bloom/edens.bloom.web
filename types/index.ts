@@ -140,10 +140,12 @@ export interface BloomState {
   token: string | null;
   isLoading: boolean;
   error: string | null;
+  selectedCategory: string;
   selectedProduct: SelectedProduct | null;
   loading: { fetchById: boolean };
   orders: Order[];
   updateUser: (user: Partial<User>) => void;
+  setSelectedCategory: (category: string) => void;
   setSelectedProduct: (product: SelectedProduct | null) => void;
   updateSelectedProduct: (product: Partial<SelectedProduct> | null) => void;
   fetchProducts: () => Promise<void>;
