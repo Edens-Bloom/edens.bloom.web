@@ -8,6 +8,7 @@ const allowedStatuses: OrderStatus[] = [
   "ordered",
   "confirmed",
   "delivered",
+  "cancelled",
 ];
 
 type OrderRouteContext = {
