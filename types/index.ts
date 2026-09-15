@@ -60,6 +60,7 @@ export interface Product {
   createdAt?: string;
   updatedAt?: string;
   productNumber?: string;
+  isActive?: boolean;
   addOns?: AddOn[];
   add_ons?: AddOn[];
   inStock?: boolean;
@@ -114,10 +115,17 @@ export interface OrderItem {
   } | null;
 }
 
+export type OrderStatus =
+  | "pending"
+  | "ordered"
+  | "confirmed"
+  | "delivered"
+  | "cancelled";
+
 export interface Order {
   id: number;
   order_number: string;
-  status: string;
+  status: OrderStatus;
   total_amount: number;
   subtotal: number;
   tax_amount: number;
@@ -164,6 +172,7 @@ export interface BloomState {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   fetchOrders: () => Promise<void>;
+  updateOrderStatus: (id: number, status: OrderStatus) => Promise<boolean>;
   onConfirm: () => Promise<Order>;
   fetchProductById: (id: number, isSelected?: boolean) => Promise<void>;
   getCartCount: () => number;

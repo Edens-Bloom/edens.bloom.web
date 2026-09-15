@@ -52,10 +52,12 @@ const ProductGrid: React.FC = () => {
     updateSelectedProduct: updateSelected,
     loading: { fetchById: isFetchingById },
   } = useStore();
-  const categories = new Set<string>([
-    ...defaultCategories,
-    ...products.map((p) => p.productType || "others"),
-  ]);
+  const categories = new Set<string>(
+    [
+      ...defaultCategories,
+      ...products.map((p) => p.productType || "others"),
+    ].map((cat) => cat.toLowerCase()),
+  );
   const [showModal, setShowModal] = useState(false);
   const [addedFlash, setAddedFlash] = useState(false);
   useEffect(() => {

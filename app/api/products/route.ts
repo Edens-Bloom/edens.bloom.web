@@ -101,11 +101,12 @@ const formatProduct = (row: Record<string, unknown> | null | undefined) => {
       typeof productRow.product_number === "string"
         ? productRow.product_number
         : undefined,
+    isActive: productRow.is_active !== false,
   };
 };
 
 export async function GET() {
-  const rows = await db("products").select("*");
+  const rows = await db("products").where("is_active", true).select("*");
   const products = rows.map(formatProduct);
   return NextResponse.json({ status: "success", data: { products } });
 }

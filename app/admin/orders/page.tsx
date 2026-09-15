@@ -1,9 +1,18 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Eye, Loader, AlertCircle, Phone, Calendar } from "lucide-react";
+import {
+  Eye,
+  Loader,
+  AlertCircle,
+  Phone,
+  Calendar,
+  Pencil,
+  Check,
+  X,
+} from "lucide-react";
 import { formatRs } from "@/utils/formatRs";
-import type { Order, OrderItem } from "@/types";
+import type { Order, OrderItem, OrderStatus } from "@/types";
 import { useStore } from "@/store/useStore";
 import "./AdminOrders.scss";
 
@@ -12,7 +21,22 @@ const AdminOrders: React.FC = () => {
   const fetchOrders = useStore((s) => s.fetchOrders);
   const isLoading = useStore((s) => s.isLoading);
   const error = useStore((s) => s.error);
+  const updateOrderStatus = useStore((s) => s.updateOrderStatus);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isEditingStatus, setIsEditingStatus] = useState(false);
+  const [editedStatus, setEditedStatus] = useState<OrderStatus>("pending");
+  const [isSavingStatus, setIsSavingStatus] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+
+  const orderStatuses: OrderStatus[] = [
+    "pending",
+    "ordered",
+    "confirmed",
+    "delivered",
+    "cancelled",
+  ];
 
   useEffect(() => {
     fetchOrders();
@@ -39,6 +63,52 @@ const AdminOrders: React.FC = () => {
       default:
         return "status-default";
     }
+  };
+
+  const handleOpenStatusEditor = () => {
+    if (!selectedOrder) return;
+    setEditedStatus(selectedOrder.status);
+    setIsEditingStatus(true);
+  };
+
+  const handleCancelStatusEdit = () => {
+    setIsEditingStatus(false);
+    if (selectedOrder) setEditedStatus(selectedOrder.status);
+  };
+
+  const handleSaveStatus = async () => {
+    if (!selectedOrder || isSavingStatus) return;
+
+    setIsSavingStatus(true);
+    const saved = await updateOrderStatus(selectedOrder.id, editedStatus);
+    if (saved) {
+      setSelectedOrder({ ...selectedOrder, status: editedStatus });
+      setIsEditingStatus(false);
+    }
+    setIsSavingStatus(false);
+  };
+
+  const filteredOrders = orders.filter((order) => {
+    const orderDate = new Date(order.created_at).getTime();
+    const matchesStatus =
+      statusFilter === "all" || order.status === statusFilter;
+    const matchesFromDate =
+      !fromDate || orderDate >= new Date(`${fromDate}T00:00:00`).getTime();
+    const matchesToDate =
+      !toDate || orderDate <= new Date(`${toDate}T23:59:59.999`).getTime();
+
+    return matchesStatus && matchesFromDate && matchesToDate;
+  });
+
+  const filteredTotal = filteredOrders.reduce(
+    (total, order) => total + Number(order.total_amount || 0),
+    0,
+  );
+
+  const clearFilters = () => {
+    setStatusFilter("all");
+    setFromDate("");
+    setToDate("");
   };
 
   if (isLoading) {
@@ -68,9 +138,65 @@ const AdminOrders: React.FC = () => {
           </div>
         )}
 
-        {orders.length === 0 ? (
+        <div className="orders-filters" aria-label="Filter orders">
+          <div className="order-filter-field">
+            <label htmlFor="status-filter">Status</label>
+            <select
+              id="status-filter"
+              value={statusFilter}
+              onChange={(event) =>
+                setStatusFilter(event.target.value as OrderStatus | "all")
+              }
+            >
+              <option value="all">All statuses</option>
+              {orderStatuses.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="order-filter-field">
+            <label htmlFor="from-date">From</label>
+            <input
+              id="from-date"
+              type="date"
+              value={fromDate}
+              max={toDate || undefined}
+              onChange={(event) => setFromDate(event.target.value)}
+            />
+          </div>
+          <div className="order-filter-field">
+            <label htmlFor="to-date">To</label>
+            <input
+              id="to-date"
+              type="date"
+              value={toDate}
+              min={fromDate || undefined}
+              onChange={(event) => setToDate(event.target.value)}
+            />
+          </div>
+          <button
+            type="button"
+            className="btn-clear-filters"
+            onClick={clearFilters}
+          >
+            Clear filters
+          </button>
+        </div>
+
+        <div className="orders-filter-summary">
+          <span>{filteredOrders.length} orders</span>
+          <strong>Total: {formatRs(filteredTotal)}</strong>
+        </div>
+
+        {filteredOrders.length === 0 ? (
           <div className="no-orders">
-            <p>No orders found</p>
+            <p>
+              {orders.length === 0
+                ? "No orders found"
+                : "No matching orders found"}
+            </p>
           </div>
         ) : (
           <div className="orders-table-wrapper">
@@ -87,7 +213,7 @@ const AdminOrders: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order: Order) => (
+                {filteredOrders.map((order: Order) => (
                   <tr key={order.id} className="order-row">
                     <td className="order-number">
                       <strong>{order.order_number}</strong>
@@ -202,13 +328,59 @@ const AdminOrders: React.FC = () => {
 
               <div className="detail-section">
                 <h3>Order Status</h3>
-                <span
-                  className={`status-badge ${getStatusBadgeClass(
-                    selectedOrder.status,
-                  )}`}
-                >
-                  {selectedOrder.status}
-                </span>
+                {isEditingStatus ? (
+                  <div className="status-editor">
+                    <select
+                      value={editedStatus}
+                      onChange={(event) =>
+                        setEditedStatus(event.target.value as OrderStatus)
+                      }
+                      aria-label="Order status"
+                    >
+                      {orderStatuses.map((status) => (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      className="status-action status-action--save"
+                      onClick={handleSaveStatus}
+                      disabled={isSavingStatus}
+                    >
+                      <Check size={15} />
+                      {isSavingStatus ? "Saving..." : "Save"}
+                    </button>
+                    <button
+                      type="button"
+                      className="status-action status-action--cancel"
+                      onClick={handleCancelStatusEdit}
+                      disabled={isSavingStatus}
+                    >
+                      <X size={15} />
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div className="status-display">
+                    <span
+                      className={`status-badge ${getStatusBadgeClass(
+                        selectedOrder.status,
+                      )}`}
+                    >
+                      {selectedOrder.status}
+                    </span>
+                    <button
+                      type="button"
+                      className="status-edit-btn"
+                      onClick={handleOpenStatusEditor}
+                      aria-label="Edit order status"
+                    >
+                      <Pencil size={15} />
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="detail-section">

@@ -50,6 +50,70 @@
   }
 }
 
+.orders-filters {
+  display: flex;
+  align-items: end;
+  gap: 16px;
+  padding: 16px 2rem;
+  border-bottom: 1px solid #e5e5e5;
+  background: #fcfcfc;
+}
+
+.order-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    color: #666;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  select,
+  input {
+    min-width: 150px;
+    border: 1px solid #d5d5d5;
+    border-radius: 4px;
+    background: white;
+    color: #333;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  select {
+    text-transform: capitalize;
+  }
+}
+
+.btn-clear-filters {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  color: #555;
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 13px;
+
+  &:hover {
+    background: #f1f1f1;
+  }
+}
+
+.orders-filter-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 2rem;
+  color: #666;
+  font-size: 14px;
+
+  strong {
+    color: #2d5016;
+    font-size: 16px;
+  }
+}
+
 .error-banner {
   display: flex;
   align-items: center;
@@ -293,6 +357,52 @@
   }
 }
 
+.status-display,
+.status-editor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-edit-btn,
+.status-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 6px 9px;
+}
+
+.status-edit-btn {
+  background: #f1f1f1;
+  color: #555;
+}
+
+.status-editor select {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px 8px;
+  text-transform: capitalize;
+}
+
+.status-action--save {
+  background: #2d5016;
+  color: white;
+}
+
+.status-action--cancel {
+  background: #eee;
+  color: #555;
+}
+
+.status-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -421,6 +531,28 @@
 
   .detail-grid {
     grid-template-columns: 1fr;
+  }
+
+  .orders-filters {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .order-filter-field {
+    select,
+    input {
+      width: 100%;
+    }
+  }
+
+  .btn-clear-filters {
+    align-self: flex-start;
+  }
+
+  .orders-filter-summary {
+    gap: 12px;
+    padding: 14px 16px;
   }
 
   .orders-table {

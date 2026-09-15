@@ -10,21 +10,21 @@ const connection = {
   database: process.env.DB_NAME,
 };
 
-// export default {
-//   development: {
-//     client: "pg",
-//     connection,
-//     migrations: {
-//       directory: "./db/migrations",
-//       tableName: "knex_migrations",
-//     },
-//   },
-//   production: {
-//     client: "pg",
-//     connection,
-//     migrations: {
-//       directory: "./db/migrations",
-//       tableName: "knex_migrations",
-//     },
-//   },
-// };
+export default {
+  development: {
+    client: "pg",
+    connection,
+    migrations: {
+      directory: "./db/migrations",
+      tableName: "knex_migrations",
+    },
+  },
+  production: {
+    client: "pg",
+    connection,
+    migrations: {
+      directory: "./db/migrations",
+      tableName: "knex_migrations",
+    },
+  },
+};

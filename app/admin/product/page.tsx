@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useStore } from "@/store/useStore";
 import {
   Plus,
@@ -14,7 +14,6 @@ import {
   ChevronUp,
   X,
   Pencil,
-  Upload,
 } from "lucide-react";
 import { formatRs } from "@/utils/formatRs";
 import type { Product, SelectedProduct } from "@/types";
@@ -59,6 +58,7 @@ const AdminProducts: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showPackagesDropdown, setShowPackagesDropdown] = useState(false);
   const [showAddonsDropdown, setShowAddonsDropdown] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
   const [packages, setPackages] = useState<PackageItem[]>(PRODUCT_PACKAGE);
@@ -131,11 +131,16 @@ const AdminProducts: React.FC = () => {
     }
   };
 
-  const handleDeleteClick = async (e: React.MouseEvent, productId: number) => {
+  const handleDeleteClick = (e: React.MouseEvent, product: Product) => {
     e.stopPropagation();
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      await deleteProduct(productId);
-    }
+    setProductToDelete(product);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+
+    const deleted = await deleteProduct(productToDelete.id);
+    if (deleted) setProductToDelete(null);
   };
 
   const handleCloseForm = () => {
@@ -1160,7 +1165,7 @@ const AdminProducts: React.FC = () => {
                       <Pencil size={18} />
                     </button>
                     <button
-                      onClick={(e) => handleDeleteClick(e, product.id)}
+                      onClick={(e) => handleDeleteClick(e, product)}
                       style={{
                         color: "#e53e3e",
                         background: "none",
@@ -1178,6 +1183,81 @@ const AdminProducts: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {productToDelete && (
+        <div
+          role="presentation"
+          onClick={() => setProductToDelete(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+            background: "rgba(15, 23, 42, 0.45)",
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-product-title"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "min(100%, 420px)",
+              padding: "1.5rem",
+              background: "white",
+              borderRadius: "0.75rem",
+              boxShadow: "0 12px 40px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            <h2 id="delete-product-title" style={{ margin: 0 }}>
+              Delete product?
+            </h2>
+            <p style={{ margin: "0.75rem 0 1.5rem", color: "#4a5568" }}>
+              Are you sure you want to delete {productToDelete.name}?
+            </p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "0.75rem",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setProductToDelete(null)}
+                style={{
+                  padding: "0.6rem 1rem",
+                  border: "1px solid #cbd5e0",
+                  borderRadius: "0.4rem",
+                  background: "white",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isLoading}
+                style={{
+                  padding: "0.6rem 1rem",
+                  border: "none",
+                  borderRadius: "0.4rem",
+                  background: "#e53e3e",
+                  color: "white",
+                  cursor: isLoading ? "wait" : "pointer",
+                  opacity: isLoading ? 0.7 : 1,
+                }}
+              >
+                {isLoading ? "Deleting..." : "Yes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

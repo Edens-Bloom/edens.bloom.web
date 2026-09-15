@@ -462,6 +462,29 @@ export const useStore = create<BloomState>((set, get) => ({
     }
   },
 
+  updateOrderStatus: async (id, status) => {
+    try {
+      const updatedOrder = await orderService.updateStatus(id, status);
+      set(
+        produce((state: BloomState) => {
+          const index = state.orders.findIndex((order) => order.id === id);
+          if (index !== -1) state.orders[index].status = updatedOrder.status;
+        }),
+      );
+      return true;
+    } catch (error) {
+      set(
+        produce((state: BloomState) => {
+          state.error =
+            error instanceof Error
+              ? error.message
+              : "Failed to update order status";
+        }),
+      );
+      return false;
+    }
+  },
+
   onConfirm: async () => {
     const state = get();
     if (!state.user || !state.user.phoneNumber) {
@@ -482,6 +505,18 @@ export const useStore = create<BloomState>((set, get) => ({
 }));
 
 const updateCartTotals = (cart: CartState) => {
+  cart.items = cart.items.map((item) => {
+    const unitPrice =
+      item.selectedAddOnId != null
+        ? Number(item.selectedAddOnPrice ?? 0)
+        : Number(item.price ?? 0);
+
+    return {
+      ...item,
+      subTotal: unitPrice * item.quantity,
+    };
+  });
+
   cart.subTotal = cart.items.reduce(
     (sum, item) => sum + (item.subTotal || 0),
     0,

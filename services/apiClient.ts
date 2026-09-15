@@ -54,6 +54,18 @@ export const apiClient = {
     return parseResponse(response);
   },
 
+  patch: async (path: string, body: unknown) => {
+    const response = await fetch(path, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(body),
+    });
+    return parseResponse(response);
+  },
+
   delete: async (path: string) => {
     const response = await fetch(path, {
       method: "DELETE",

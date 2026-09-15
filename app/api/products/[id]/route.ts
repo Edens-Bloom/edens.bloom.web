@@ -132,6 +132,7 @@ const formatProduct = (row: DProduct | Record<string, unknown>) => {
       typeof productRow.product_number === "string"
         ? productRow.product_number
         : undefined,
+    isActive: productRow.is_active !== false,
   };
 };
 
@@ -148,7 +149,7 @@ export async function GET(req: NextRequest, { params }: ProductRouteContext) {
 
   const rows = await db("products as p")
     .leftJoin("product_addons as pa", "p.id", "pa.product_id")
-    .where({ "p.id": productId })
+    .where({ "p.id": productId, "p.is_active": true })
     .select(
       "p.*",
       "pa.id as addon_id",
@@ -312,7 +313,9 @@ export async function DELETE(_: NextRequest, { params }: ProductRouteContext) {
     );
   }
 
-  const deleted = await db("products").where({ id: productId }).del();
+  const deleted = await db("products")
+    .where({ id: productId, is_active: true })
+    .update({ is_active: false, updated_at: new Date() });
   if (!deleted) {
     return NextResponse.json(
       { status: "fail", message: "Product not found" },
