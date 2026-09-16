@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ShoppingBag, ArrowRight, Minus, Plus } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -14,15 +13,9 @@ import { Trash } from "lucide-react";
 import { RefreshCw } from "lucide-react";
 
 const CartPage: React.FC = () => {
-  const { cart, removeFromCart, updateCart, onConfirm } = useStore();
+  const { cart, removeFromCart, updateCart } = useStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const router = useRouter();
-
   const handleCheckout = () => setIsModalOpen(true);
-
-  const handleConfirmOrder = async () => {
-    await onConfirm();
-  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -222,7 +215,6 @@ const CartPage: React.FC = () => {
           onClose={() => {
             setIsModalOpen(false);
           }}
-          onConfirm={handleConfirmOrder}
           total={cart.totalAmount}
         />
       )}

@@ -319,7 +319,7 @@ export const useStore = create<BloomState>((set, get) => ({
     saveJson("bloom_cart", cart);
     set(
       produce((state: BloomState) => {
-        state.cart = cart;
+        state.cart = { ...cart };
       }),
     );
   },
@@ -493,12 +493,7 @@ export const useStore = create<BloomState>((set, get) => ({
       );
     }
     const order = await orderService.orderConfirm(state.user, state.cart);
-    set(
-      produce((draft: BloomState) => {
-        draft.orders.unshift(order);
-        draft.cart = initializeCart();
-      }),
-    );
+    saveJson("bloom_user", state.user);
     saveJson("bloom_cart", initializeCart());
     return order;
   },

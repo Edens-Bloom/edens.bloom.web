@@ -1,32 +1,30 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CheckCircle, Home, ShoppingBag } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, X } from "lucide-react";
 import { formatRs } from "@/utils/formatRs";
 import "./OrderConfirmation.scss";
 import { useStore } from "@/store/useStore";
-import type { User } from "@/types";
+import type { Order, User } from "@/types";
 import { useRouter } from "next/navigation";
 
 interface OrderConfirmationProps {
   onClose: () => void;
-  onConfirm: () => Promise<void>;
   total: number;
 }
 
 const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
   onClose,
-  onConfirm,
   total,
 }) => {
-  const { updateUser, user, clearCart } = useStore();
-  const [orderNumber] = useState(() => Math.floor(Math.random() * 1000000));
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const { updateUser, user, clearCart, onConfirm } = useStore();
+  const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [description, setDescription] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-
+  console.log("LOG", confirmedOrder, showConfirmation);
   // Disable body scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -51,16 +49,14 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
-
     if (!isFormValid || isSubmitting) {
       return;
     }
-
     try {
       setIsSubmitting(true);
-      await onConfirm();
-      clearCart();
-      setIsFormSubmitted(true);
+      const order = await onConfirm();
+      setConfirmedOrder(order);
+      setShowConfirmation(true);
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to submit order.";
@@ -76,104 +72,111 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
     (user?.address?.trim().length || 0) > 4;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        {!isFormSubmitted ? (
-          <>
-            <div className="modal-header">
-              <h2>Confirm Your Information</h2>
-              <p>
-                Please provide your details to proceed with your order. We’ll
-                call you to confirm. Thank you!
-              </p>
+    <>
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h2>Confirm Your Information</h2>
+            <p>
+              Please provide your details to proceed with your order. We’ll call
+              you to confirm. Thank you!
+            </p>
+          </div>
+
+          <form className="modal-body" onSubmit={handleFormSubmit}>
+            <div className="form-group">
+              <label htmlFor="name">Full Name *</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={user?.name || ""}
+                onChange={handleInputChange}
+                placeholder="Enter your full name"
+                required
+              />
             </div>
 
-            <form className="modal-body" onSubmit={handleFormSubmit}>
-              <div className="form-group">
-                <label htmlFor="name">Full Name *</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={user?.name || ""}
-                  onChange={handleInputChange}
-                  placeholder="Enter your full name"
-                  required
-                />
-              </div>
+            <div className="form-group">
+              <label htmlFor="phone">Phone Number *</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phoneNumber"
+                value={user?.phoneNumber || ""}
+                onChange={handleInputChange}
+                placeholder="Enter your phone number"
+                required
+              />
+            </div>
 
-              <div className="form-group">
-                <label htmlFor="phone">Phone Number *</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phoneNumber"
-                  value={user?.phoneNumber || ""}
-                  onChange={handleInputChange}
-                  placeholder="Enter your phone number"
-                  required
-                />
-              </div>
+            <div className="form-group">
+              <label htmlFor="address">Delivery Address *</label>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                value={user?.address || ""}
+                onChange={handleInputChange}
+                placeholder="Enter your delivery address"
+                required
+              />
+            </div>
 
-              <div className="form-group">
-                <label htmlFor="address">Delivery Address *</label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  value={user?.address || ""}
-                  onChange={handleInputChange}
-                  placeholder="Enter your delivery address"
-                  required
-                />
-              </div>
+            <div className="form-group">
+              <label htmlFor="description">Description</label>
+              <textarea
+                id="description"
+                name="description"
+                value={description}
+                onChange={handleInputChange}
+                placeholder="Enter any additional details"
+                rows={3}
+              />
+            </div>
 
-              <div className="form-group">
-                <label htmlFor="description">Description</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={description}
-                  onChange={handleInputChange}
-                  placeholder="Enter any additional details"
-                  rows={3}
-                />
+            <div className="order-summary">
+              <div className="detail-row">
+                <span>Total Amount</span>
+                <span className="amount">{formatRs(total)}</span>
               </div>
+            </div>
 
-              <div className="order-summary">
-                <div className="detail-row">
-                  <span>Total Amount</span>
-                  <span className="amount">{formatRs(total)}</span>
-                </div>
-              </div>
+            {submitError && <div className="form-error">{submitError}</div>}
+            <div className="modal-footer">
+              <button type="button" className="secondary-btn" onClick={onClose}>
+                <ShoppingBag size={18} /> Cancel
+              </button>
+              <button
+                type="submit"
+                className="primary-btn"
+                disabled={!isFormValid || isSubmitting}
+              >
+                {isSubmitting ? "Submitting order..." : "Proceed to Order"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
 
-              {submitError && <div className="form-error">{submitError}</div>}
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="secondary-btn"
-                  onClick={onClose}
-                >
-                  <ShoppingBag size={18} /> Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="primary-btn"
-                  disabled={!isFormValid || isSubmitting}
-                >
-                  {isSubmitting ? "Submitting order..." : "Proceed to Order"}
-                </button>
-              </div>
-            </form>
-          </>
-        ) : (
-          <>
+      {showConfirmation && (
+        <div className="modal-overlay" onClick={onClose}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="modal-close"
+              onClick={onClose}
+              aria-label="Close order confirmation"
+            >
+              <X size={20} />
+            </button>
             <div className="modal-header">
               <div className="success-icon">
                 <CheckCircle size={48} strokeWidth={1.5} />
               </div>
               <h2>Thank You for Your Order!</h2>
-              <p>Order #BLOOM-{orderNumber}</p>
+              <p>Order #{confirmedOrder?.order_number}</p>
+              <p>Please save this order number to track your product.</p>
             </div>
 
             <div className="modal-body">
@@ -198,26 +201,29 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
             </div>
 
             <div className="modal-footer">
-              <button
+              {/* <button
                 className="btn-secondary"
-                onClick={() => router.push("/")}
+                onClick={() => {
+                  router.push("/");
+                  clearCart();
+                }}
               >
                 <ShoppingBag size={18} /> View Details
-              </button>
+              </button> */}
               <button
                 className="primary-btn"
                 onClick={() => {
-                  clearCart();
                   router.push("/");
+                  clearCart();
                 }}
               >
                 <Home size={18} /> Return to Shop
               </button>
             </div>
-          </>
-        )}
-      </div>
-    </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
