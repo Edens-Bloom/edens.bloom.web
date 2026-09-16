@@ -5,7 +5,7 @@ import { produce } from "immer";
 import { authService } from "@/services/authService";
 import { productService } from "@/services/productService";
 import { orderService } from "@/services/orderService";
-import { wishlistService } from "@/services/wishlistService";
+// import { wishlistService } from "@/services/wishlistService";
 import type {
   BloomState,
   CartState,
@@ -88,19 +88,20 @@ export const useStore = create<BloomState>((set, get) => ({
     ),
 
   updateUser: (updatedFields) => {
-    set(
-      produce((state: BloomState) => {
-        state.user = state.user
-          ? { ...state.user, ...updatedFields }
-          : {
-              id: 0,
-              username: "",
-              email: "",
-              role: "user",
-              ...updatedFields,
-            };
-      }),
-    );
+    const currentUser = get().user;
+    const nextUser: User = currentUser
+      ? { ...currentUser, ...updatedFields }
+      : {
+          id: 0,
+          username: "",
+          email: "",
+          role: "user",
+          phoneNumber: "",
+          ...updatedFields,
+        };
+
+    set({ user: nextUser });
+    saveJson("bloom_user", nextUser);
   },
   fetchProducts: async () => {
     set(
@@ -335,54 +336,52 @@ export const useStore = create<BloomState>((set, get) => ({
         state.token = loadJson<string | null>("bloom_token", null);
       }),
     );
-    void get().fetchWishlist();
+    // void get().fetchWishlist();
   },
 
-  fetchWishlist: async () => {
-    if (!get().user) return;
+  // fetchWishlist: async () => {
+  //   if (!get().user) return;
 
-    try {
-      const productIds = await wishlistService.fetchProductIds();
-      set(
-        produce((state: BloomState) => {
-          state.wishlist = productIds;
-        }),
-      );
-      saveJson("bloom_wishlist", productIds);
-    } catch {
-      // Keep the locally cached wishlist available if the database is unavailable.
-    }
-  },
+  //   try {
+  //     const productIds = await wishlistService.fetchProductIds();
+  //     set(
+  //       produce((state: BloomState) => {
+  //         state.wishlist = productIds;
+  //       }),
+  //     );
+  //     saveJson("bloom_wishlist", productIds);
+  //   } catch {
+  //     // Keep the locally cached wishlist available if the database is unavailable.
+  //   }
+  // },
 
-  toggleWishlist: async (productId: number) => {
-    const wasWishlisted = get().wishlist.includes(productId);
+  // toggleWishlist: async (productId: number) => {
+  //   const wasWishlisted = get().wishlist.includes(productId);
 
-    set(
-      produce((state: BloomState) => {
-        if (wasWishlisted) {
-          state.wishlist = state.wishlist.filter((id) => id !== productId);
-        } else {
-          state.wishlist.push(productId);
-        }
-        saveJson("bloom_wishlist", state.wishlist);
-      }),
-    );
+  //   set(
+  //     produce((state: BloomState) => {
+  //       if (wasWishlisted) {
+  //         state.wishlist = state.wishlist.filter((id) => id !== productId);
+  //       } else {
+  //         state.wishlist.push(productId);
+  //       }
+  //       saveJson("bloom_wishlist", state.wishlist);
+  //     }),
+  //   );
 
-    // if (!get().user) return;
-    console.log("LOGGINg", productId);
-    try {
-      if (wasWishlisted) await wishlistService.remove(productId);
-      else await wishlistService.add(productId);
-    } catch {
-      set(
-        produce((state: BloomState) => {
-          if (wasWishlisted) state.wishlist.push(productId);
-          else state.wishlist = state.wishlist.filter((id) => id !== productId);
-          saveJson("bloom_wishlist", state.wishlist);
-        }),
-      );
-    }
-  },
+  //   try {
+  //     if (wasWishlisted) await wishlistService.remove(productId);
+  //     else await wishlistService.add(productId);
+  //   } catch {
+  //     set(
+  //       produce((state: BloomState) => {
+  //         if (wasWishlisted) state.wishlist.push(productId);
+  //         else state.wishlist = state.wishlist.filter((id) => id !== productId);
+  //         saveJson("bloom_wishlist", state.wishlist);
+  //       }),
+  //     );
+  //   }
+  // },
 
   getCartTotal: () => {
     return get().cart.totalAmount;
@@ -410,7 +409,7 @@ export const useStore = create<BloomState>((set, get) => ({
           state.isLoading = false;
         }),
       );
-      void get().fetchWishlist();
+      // void get().fetchWishlist();
       return true;
     } catch (error) {
       set(
@@ -436,7 +435,7 @@ export const useStore = create<BloomState>((set, get) => ({
     saveJson("bloom_wishlist", []);
   },
 
-  fetchOrders: async () => {
+  fetchOrders: async (phone) => {
     set(
       produce((state: BloomState) => {
         state.isLoading = true;
@@ -444,7 +443,7 @@ export const useStore = create<BloomState>((set, get) => ({
       }),
     );
     try {
-      const orders = await orderService.fetchAllOrders();
+      const orders = await orderService.fetchAllOrders(phone);
       set(
         produce((state: BloomState) => {
           state.orders = orders;

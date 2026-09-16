@@ -6,8 +6,9 @@ export const orderService = {
     const response = await apiClient.post("/api/orders", { user, cart });
     return response.data.order as Order;
   },
-  fetchAllOrders: async (): Promise<Order[]> => {
-    const response = await apiClient.get("/api/orders");
+  fetchAllOrders: async (phone?: string): Promise<Order[]> => {
+    const query = phone ? `?phone=${encodeURIComponent(phone)}` : "";
+    const response = await apiClient.get(`/api/orders${query}`);
     return response.data.orders || [];
   },
   fetchOrderById: async (id: number): Promise<Order> => {

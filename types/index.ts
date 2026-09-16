@@ -164,14 +164,14 @@ export interface BloomState {
   ) => Promise<boolean>;
   deleteProduct: (id: number) => Promise<boolean>;
   addToCart: (product: SelectedProduct) => void;
-  toggleWishlist: (productId: number) => Promise<void>;
-  fetchWishlist: () => Promise<void>;
+  // toggleWishlist: (productId: number) => Promise<void>;
+  // fetchWishlist: () => Promise<void>;
   removeFromCart: (item: SelectedProduct) => void;
   updateCart: (product: SelectedProduct) => void;
   clearCart: () => void;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
-  fetchOrders: () => Promise<void>;
+  fetchOrders: (phone?: string) => Promise<void>;
   updateOrderStatus: (id: number, status: OrderStatus) => Promise<boolean>;
   onConfirm: () => Promise<Order>;
   fetchProductById: (id: number, isSelected?: boolean) => Promise<void>;

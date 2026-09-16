@@ -54,18 +54,27 @@ export async function POST(req: NextRequest) {
     })
     .returning("*");
 
-  const orderItems = cart.items.map((item: any) => ({
-    order_id: order.id,
-    product_id: item.id,
-    package_id: null,
-    addon_id: item.selectedAddOnId ?? null,
-    buy_quantity: Number(item.quantity || 0),
-    free_quantity: 0,
-    total_quantity: Number(item.quantity || 0),
-    price_at_order: Number(item.price ?? item.subTotal ?? 0),
-    addon_price_at_order: Number(item.selectedAddOnPrice ?? 0),
-    subtotal: Number(item.subTotal ?? 0),
-  }));
+  const orderItems = cart.items.map(
+    (item: {
+      id: number;
+      selectedAddOnId?: number | null;
+      quantity?: number;
+      selectedAddOnPrice?: number;
+      price?: number;
+      subTotal?: number;
+    }) => ({
+      order_id: order.id,
+      product_id: item.id,
+      package_id: null,
+      addon_id: item.selectedAddOnId ?? null,
+      buy_quantity: Number(item.quantity || 0),
+      free_quantity: 0,
+      total_quantity: Number(item.quantity || 0),
+      price_at_order: Number(item.price ?? item.subTotal ?? 0),
+      addon_price_at_order: Number(item.selectedAddOnPrice ?? 0),
+      subtotal: Number(item.subTotal ?? 0),
+    }),
+  );
 
   if (orderItems.length > 0) {
     await db("order_items").insert(orderItems);
@@ -83,7 +92,16 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const user = await getCurrentUser(req);
-  if (!user || user.role !== "admin") {
+  const phone = req.nextUrl.searchParams.get("phone")?.trim();
+
+  if (phone && !/^\d{10}$/.test(phone)) {
+    return NextResponse.json(
+      { status: "fail", message: "A valid phone number is required" },
+      { status: 400 },
+    );
+  }
+
+  if (!phone && (!user || user.role !== "admin")) {
     return NextResponse.json(
       { status: "fail", message: "Unauthorized" },
       { status: 401 },
@@ -108,6 +126,9 @@ export async function GET(req: NextRequest) {
       "customers.address",
     )
     .leftJoin("customers", "orders.customer_id", "customers.id")
+    .modify((query) => {
+      if (phone) query.where("customers.phone", phone);
+    })
     .orderBy("orders.created_at", "desc");
 
   const orderIds = orders.map((order: { id: number }) => order.id);

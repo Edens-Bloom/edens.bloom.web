@@ -126,7 +126,7 @@ const AdminOrders: React.FC = () => {
         <div className="orders-header">
           <h1>Orders Management</h1>
           <p>Track and manage all customer orders</p>
-          <button className="btn-refresh" onClick={fetchOrders}>
+          <button className="btn-refresh" onClick={() => fetchOrders()}>
             Refresh
           </button>
         </div>
