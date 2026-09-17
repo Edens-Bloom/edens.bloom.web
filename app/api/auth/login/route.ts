@@ -26,9 +26,19 @@ export async function POST(req: NextRequest) {
   const token = signToken(user.id);
   const sanitizedUser = { ...user, password: undefined };
 
-  return NextResponse.json({
+  const response = NextResponse.json({
     status: "success",
     token,
     data: { user: sanitizedUser },
   });
+
+  response.cookies.set("bloom_token", token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 60 * 24 * 90,
+    path: "/",
+  });
+
+  return response;
 }

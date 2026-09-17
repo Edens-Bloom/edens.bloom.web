@@ -1,5 +1,6 @@
 import jwt, { type Secret, type SignOptions } from "jsonwebtoken";
 import db from "@/lib/db";
+import { NextResponse } from "next/server";
 
 const JWT_SECRET: Secret = (process.env.JWT_SECRET || "secret") as Secret;
 const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN ||
@@ -31,4 +32,22 @@ export const getCurrentUser = async (req: Request) => {
   } catch {
     return null;
   }
+};
+
+export const unauthorizedResponse = () =>
+  NextResponse.json(
+    { status: "fail", message: "Authentication required" },
+    { status: 401 },
+  );
+
+export const requireUser = async (req: Request) => {
+  const user = await getCurrentUser(req);
+  return user ? { user } : { response: unauthorizedResponse() };
+};
+
+export const requireAdmin = async (req: Request) => {
+  const user = await getCurrentUser(req);
+  return user?.role === "admin"
+    ? { user }
+    : { response: unauthorizedResponse() };
 };

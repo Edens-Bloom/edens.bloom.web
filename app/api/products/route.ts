@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import cloudinary, { getSignedImageUrl } from "@/lib/cloudinary";
 import { createProductNumber } from "@/lib/productNumber";
+import { requireAdmin } from "@/lib/auth";
 
 const uploadFileToCloudinary = async (file: File) => {
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -112,6 +113,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAdmin(req);
+  if (auth.response) return auth.response;
+
   const body = await getRequestBody(req);
   const name = body.name?.toString().trim();
   const category = body.category?.toString().trim();

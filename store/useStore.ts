@@ -423,6 +423,7 @@ export const useStore = create<BloomState>((set, get) => ({
   },
 
   logout: () => {
+    void fetch("/api/auth/logout", { method: "POST" });
     window.localStorage.removeItem("bloom_token");
     window.localStorage.removeItem("bloom_user");
     set(

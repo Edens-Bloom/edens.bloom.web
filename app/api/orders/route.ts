@@ -94,6 +94,13 @@ export async function GET(req: NextRequest) {
   const user = await getCurrentUser(req);
   const phone = req.nextUrl.searchParams.get("phone")?.trim();
 
+  if (!user) {
+    return NextResponse.json(
+      { status: "fail", message: "Authentication required" },
+      { status: 401 },
+    );
+  }
+
   if (phone && !/^\d{10}$/.test(phone)) {
     return NextResponse.json(
       { status: "fail", message: "A valid phone number is required" },
@@ -101,7 +108,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  if (!phone && (!user || user.role !== "admin")) {
+  if (!phone && user.role !== "admin") {
     return NextResponse.json(
       { status: "fail", message: "Unauthorized" },
       { status: 401 },

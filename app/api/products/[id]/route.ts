@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import cloudinary, { getSignedImageUrl } from "@/lib/cloudinary";
+import { requireAdmin } from "@/lib/auth";
 import { DBAddOns, DProduct, Product } from "@/types";
 
 const uploadFileToCloudinary = async (file: File) => {
@@ -178,6 +179,9 @@ export async function GET(req: NextRequest, { params }: ProductRouteContext) {
 }
 
 export async function PUT(req: NextRequest, { params }: ProductRouteContext) {
+  const auth = await requireAdmin(req);
+  if (auth.response) return auth.response;
+
   const productId = await getProductId(params);
   if (!productId) {
     return NextResponse.json(
@@ -305,6 +309,9 @@ export async function PUT(req: NextRequest, { params }: ProductRouteContext) {
 }
 
 export async function DELETE(_: NextRequest, { params }: ProductRouteContext) {
+  const auth = await requireAdmin(_);
+  if (auth.response) return auth.response;
+
   const productId = await getProductId(params);
   if (!productId) {
     return NextResponse.json(
