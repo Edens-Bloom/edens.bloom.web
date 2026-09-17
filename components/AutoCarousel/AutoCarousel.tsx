@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import "./AutoCarousel.scss";
 import { formatRs } from "@/utils/formatRs";
 
@@ -25,117 +25,112 @@ const items = [
       "https://res.cloudinary.com/dkjqlvdxx/image/upload/v1779779762/mixed_bouquet_htrkdi.jpg",
     price: 850,
   },
+  {
+    imageUrl:
+      "https://res.cloudinary.com/dkjqlvdxx/image/upload/v1779779468/Blue_lily_ktjqwk.jpg",
+    price: 900,
+  },
 ];
 
 function AutoCarousel() {
-  const extendedItems = items.length > 0 ? [...items, items[0]] : [];
-
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (isPaused || items.length < 2) return;
 
-  // =========================
-  // AUTO SLIDE TIMER
-  // =========================
-  const startTimer = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-    timeoutRef.current = setTimeout(() => {
-      setCurrentIndex((prev) => prev + 1);
+    const timer = window.setTimeout(() => {
+      setCurrentIndex((prev) => (prev + 1) % items.length);
     }, 3000);
-  };
 
-  // =========================
-  // HANDLE TAB VISIBILITY
-  // =========================
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Pause when tab inactive
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      } else {
-        // Reset safely when user returns
-        setIsTransitioning(false);
-        setCurrentIndex((prev) => prev % items.length);
-
-        requestAnimationFrame(() => {
-          setIsTransitioning(true);
-          startTimer();
-        });
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
-
-  // =========================
-  // RUN TIMER ON INDEX CHANGE
-  // =========================
-  useEffect(() => {
-    startTimer();
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, [currentIndex]);
-
-  // =========================
-  // INFINITE LOOP HANDLER
-  // =========================
-  const handleTransitionEnd = () => {
-    if (currentIndex === extendedItems.length - 1) {
-      setIsTransitioning(false);
-      setCurrentIndex(0);
-    }
-  };
-
-  // Re-enable transition after reset
-  useEffect(() => {
-    if (!isTransitioning) {
-      requestAnimationFrame(() => {
-        setIsTransitioning(true);
-      });
-    }
-  }, [isTransitioning]);
+    return () => window.clearTimeout(timer);
+  }, [currentIndex, isPaused]);
 
   // =========================
   // SAFETY GUARD
   // =========================
-  if (!extendedItems.length) return null;
+  if (!items.length) return null;
+
+  const goTo = (index: number) => {
+    setCurrentIndex((index + items.length) % items.length);
+    setIsPaused(true);
+  };
+
+  const move = (direction: number) => {
+    goTo(currentIndex + direction);
+  };
 
   return (
-    <div className="carousel-container">
-      <div
-        className="carousel-track"
-        style={{
-          transform: `translateX(-${currentIndex * 100}%)`,
-          transition: isTransitioning ? "transform 0.5s ease-in-out" : "none",
-        }}
-        onTransitionEnd={handleTransitionEnd}
-      >
-        {extendedItems.map((item, index) => (
-          <div className="carousel-slide" key={index}>
-            <div className="image-wrapper">
-              <img src={item.imageUrl} alt={`Product ${index + 1}`} />
-              <div className="price-tag">{formatRs(item.price)}</div>
-            </div>
-          </div>
-        ))}
+    <div
+      className="carousel-container"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
+    >
+      <div className="carousel-stage" aria-live="polite">
+        {items.map((item, index) => {
+          const offset =
+            ((index - currentIndex + items.length + 2) % items.length) - 2;
+          const distance = Math.abs(offset);
+
+          return (
+            <button
+              className={`carousel-card ${offset === 0 ? "is-active" : ""}`}
+              key={`${item.imageUrl}-${index}`}
+              style={
+                {
+                  "--card-x": `${offset * 150}px`,
+                  "--card-depth": "clamp(150px, 18vw, 220px)",
+                  "--card-scale":
+                    offset === 0 ? 1 : distance === 1 ? 0.84 : 0.68,
+                  "--card-opacity":
+                    offset === 0 ? 1 : distance === 1 ? 0.72 : 0,
+                  "--card-blur": `${distance === 0 ? 0 : distance === 1 ? 0.7 : 2}px`,
+                  pointerEvents: distance === 2 ? "none" : "auto",
+                  zIndex: items.length - distance,
+                } as React.CSSProperties
+              }
+              type="button"
+              onClick={() => goTo(index)}
+              aria-label={`Show product ${index + 1}`}
+              aria-pressed={offset === 0}
+            >
+              <span className="image-wrapper">
+                <img src={item.imageUrl} alt={`Product ${index + 1}`} />
+                <span className="price-tag">{formatRs(item.price)}</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* DOTS */}
+      <button
+        className="carousel-control carousel-control--prev"
+        type="button"
+        onClick={() => move(-1)}
+        aria-label="Previous product"
+      >
+        <span aria-hidden="true">&#8592;</span>
+      </button>
+      <button
+        className="carousel-control carousel-control--next"
+        type="button"
+        onClick={() => move(1)}
+        aria-label="Next product"
+      >
+        <span aria-hidden="true">&#8594;</span>
+      </button>
+
       <div className="carousel-dots">
         {items.map((_, index) => (
-          <span
+          <button
             key={index}
-            className={`dot ${
-              currentIndex % items.length === index ? "active" : ""
-            }`}
+            className={`dot ${currentIndex === index ? "active" : ""}`}
+            type="button"
+            onClick={() => goTo(index)}
+            aria-label={`Go to product ${index + 1}`}
+            aria-current={currentIndex === index ? "true" : undefined}
           />
         ))}
       </div>

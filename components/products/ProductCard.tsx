@@ -70,10 +70,7 @@ export default function ProductCard({
             {discount ? `-${discount}%` : "New"}
           </span>
         ) : null}
-        <Link
-          href={`/products/${product.id}`}
-          className="product-card__media-link"
-        >
+        <div className="product-card__media-link">
           {product.imageUrl ? (
             <Image
               className="product-card__image"
@@ -96,7 +93,7 @@ export default function ProductCard({
               <ImageOff size={26} strokeWidth={1.5} aria-hidden="true" />
             </span>
           )}
-        </Link>
+        </div>
       </div>
 
       <div className="product-card__content">

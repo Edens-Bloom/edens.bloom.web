@@ -1,30 +1,51 @@
 .carousel-container {
   position: relative;
   width: 100%;
-  max-width: 500px; /* Adjust the maximum width of your card as needed */
+  max-width: 620px;
+  height: 460px;
   margin: 0 auto;
-  overflow: hidden; /* Hides images outside the viewport box */
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  background-color: #fff;
+  isolation: isolate;
+  overflow: hidden;
+  perspective: 1200px;
 }
 
-.carousel-track {
-  display: flex;
+.carousel-stage {
+  position: relative;
   width: 100%;
   height: 100%;
 }
 
-.carousel-slide {
-  min-width: 100%;
-  box-sizing: border-box;
-  flex-shrink: 0;
+.carousel-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(170px, 31vw, 250px);
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  // background: #e9e3dc;
+  box-shadow: 0 24px 45px rgba(71, 54, 40, 0.2);
+  transform: translate(-50%, -50%) translateX(var(--card-x))
+    translateZ(var(--card-depth)) scale(var(--card-scale));
+  transform-style: preserve-3d;
+  opacity: var(--card-opacity);
+  filter: blur(var(--card-blur));
+  transition:
+    transform 0.6s cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 0.6s ease,
+    filter 0.6s ease,
+    box-shadow 0.6s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .image-wrapper {
+  display: block;
   position: relative;
   width: 100%;
-  padding-top: 100%; /* Keeps a perfect 1:1 Aspect Ratio square. Change to 75% for 4:3 landscape */
+  height: 100%;
 }
 
 .image-wrapper img {
@@ -33,22 +54,71 @@
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures images fill the container elegantly without distortion */
+  object-fit: cover;
 }
 
 .price-tag {
   position: absolute;
   bottom: 20px;
   right: 20px;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(39, 31, 25, 0.78);
   color: #fff;
   padding: 8px 16px;
-  font-family: sans-serif;
+  font-family: inherit;
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   border-radius: 20px;
-  backdrop-filter: blur(4px); /* Modern frosted-glass effect */
+  backdrop-filter: blur(4px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.carousel-card.is-active {
+  box-shadow: 0 30px 55px rgba(71, 54, 40, 0.28);
+}
+
+.carousel-card:focus-visible,
+.carousel-control:focus-visible,
+.dot:focus-visible {
+  outline: 3px solid #b66b52;
+  outline-offset: 4px;
+}
+
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid rgba(86, 63, 45, 0.18);
+  border-radius: 50%;
+  color: #4c392e;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 8px 18px rgba(71, 54, 40, 0.13);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.carousel-control:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.06);
+}
+
+.carousel-control span {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.carousel-control--prev {
+  left: 5%;
+}
+
+.carousel-control--next {
+  right: 5%;
 }
 
 .carousel-dots {
@@ -61,16 +131,38 @@
 }
 
 .dot {
+  padding: 0;
   width: 8px;
   height: 8px;
+  border: 0;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(76, 57, 46, 0.28);
+  cursor: pointer;
   transition:
     background-color 0.3s ease,
     transform 0.3s ease;
 }
 
 .dot.active {
-  background-color: #fff;
+  background-color: #b66b52;
   transform: scale(1.2);
+}
+
+@media (max-width: 640px) {
+  .carousel-container {
+    height: 380px;
+  }
+
+  .carousel-control {
+    width: 40px;
+    height: 40px;
+  }
+
+  .carousel-control--prev {
+    left: 1%;
+  }
+
+  .carousel-control--next {
+    right: 1%;
+  }
 }
